@@ -1184,6 +1184,80 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* Hamburger Dropdown */
+    .hamburger-dropdown {
+      display: none;
+      position: absolute;
+      top: 90px;
+      right: 40px;
+      width: 320px;
+      background: rgba(11, 14, 20, 0.95);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 16px;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 1000;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      animation: dropdownFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .hamburger-dropdown.active {
+      display: flex;
+    }
+    @keyframes dropdownFadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .dropdown-header {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      letter-spacing: 0.1em;
+      padding: 6px 12px;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      margin-bottom: 6px;
+      text-align: left;
+    }
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #FFFFFF;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+    .dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateX(4px);
+    }
+    .item-icon {
+      font-size: 1.4rem;
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dropdown-item:hover .item-icon {
+      background: rgba(231, 111, 81, 0.15);
+    }
+    .item-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+    .item-desc {
+      font-size: 0.68rem;
+      color: var(--color-text-muted);
+    }
   </style>
 </head>
 <body>
@@ -1210,6 +1284,46 @@
     </div>
   </div>
 </header>
+
+<!-- Dropdown Menu for Hamburger -->
+<div class="hamburger-dropdown" id="hamburgerDropdown">
+  <div class="dropdown-header">THERMOS AI MODULES</div>
+  <a href="{{ url_for('dashboard') }}" class="dropdown-item">
+    <span class="item-icon">📊</span>
+    <div>
+      <div class="item-title">Overview Dashboard</div>
+      <div class="item-desc">Real-time heat monitoring &amp; city analytics</div>
+    </div>
+  </a>
+  <a href="{{ url_for('heatmap') }}" class="dropdown-item">
+    <span class="item-icon">🌡️</span>
+    <div>
+      <div class="item-title">Live Sensor Map</div>
+      <div class="item-desc">High-resolution spatial thermal modeling</div>
+    </div>
+  </a>
+  <a href="{{ url_for('simulator') }}" class="dropdown-item">
+    <span class="item-icon">🗺️</span>
+    <div>
+      <div class="item-title">Simulator Sandbox</div>
+      <div class="item-desc">Simulate cooling &amp; mitigation interventions</div>
+    </div>
+  </a>
+  <a href="{{ url_for('recommendations') }}" class="dropdown-item">
+    <span class="item-icon">🎯</span>
+    <div>
+      <div class="item-title">Cooling Strategies</div>
+      <div class="item-desc">AI-optimized mitigation recommendations</div>
+    </div>
+  </a>
+  <a href="{{ url_for('about') }}" class="dropdown-item">
+    <span class="item-icon">👥</span>
+    <div>
+      <div class="item-title">Support &amp; About Team</div>
+      <div class="item-desc">Bugs2Bucks developers &amp; hackathon context</div>
+    </div>
+  </a>
+</div>
 
 <!-- ───── HERO WRAPPER ───── -->
 <div class="welcome-hero-wrap">
@@ -1276,18 +1390,9 @@
     </div>
     
     <!-- Right Content (Cropped Graphic visual) -->
+    <div class="hero-right">
       <!-- Video replacement -->
       <video src="/static/images/can_u_generate_video_only_base.mp4" class="hero-art-image" autoplay loop muted playsinline style="width: 100%; border-radius: var(--radius-xl); box-shadow: var(--shadow-premium); object-fit: cover; border: 1.5px solid rgba(255, 255, 255, 0.08);"></video>
-      
-      <!-- Floating Current Heat Index overlay -->
-      <div class="floating-stats-widget">
-        <div class="widget-lbl">Current Heat Index</div>
-        <div class="widget-val">42&deg;C</div>
-        <div class="widget-status-row">
-          <span class="widget-status-dot"></span>
-          <span class="widget-status-txt">High Risk</span>
-        </div>
-      </div>
     </div>
 
   </main>
@@ -1828,6 +1933,24 @@
       }
     });
   }
+
+  // Hamburger dropdown event handler
+  (function() {
+    const hamburgerIcon = document.querySelector('.hamburger-icon');
+    const hamburgerDropdown = document.getElementById('hamburgerDropdown');
+    if (hamburgerIcon && hamburgerDropdown) {
+      hamburgerIcon.addEventListener('click', (e) => {
+        e.stopPropagation();
+        hamburgerDropdown.classList.toggle('active');
+      });
+      document.addEventListener('click', () => {
+        hamburgerDropdown.classList.remove('active');
+      });
+      hamburgerDropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
+  })();
 </script>
 </body>
 </html>

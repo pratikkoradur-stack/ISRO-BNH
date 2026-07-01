@@ -46,10 +46,37 @@
     </div>
     
     <div style="display: flex; align-items: center; gap: 14px;">
-      <!-- Notification Icon -->
-      <button class="app-icon-btn" onclick="showToast('No new notifications', 'info')">
-        <span class="material-symbols-outlined">notifications</span>
-      </button>
+      <!-- Notification Icon & Dropdown -->
+      <div style="position:relative;">
+        <button class="app-icon-btn" id="notifBtn" title="Platform Notifications">
+          <span class="material-symbols-outlined">notifications</span>
+          <span style="position:absolute; top:2px; right:2px; width:8px; height:8px; background:var(--accent-orange); border-radius:50%;"></span>
+        </button>
+        <div class="notif-dropdown" id="notifDropdown">
+          <div class="notif-header">CRITICAL ALERTS</div>
+          <div class="notif-item danger">
+            <span class="notif-icon">🔥</span>
+            <div>
+              <div class="notif-title">Koramangala Heat Alert</div>
+              <div class="notif-desc">LST reached extreme peak of 57.3°C today. Mitigation recommended.</div>
+            </div>
+          </div>
+          <div class="notif-item warning">
+            <span class="notif-icon">⚠️</span>
+            <div>
+              <div class="notif-title">Air Quality Alert</div>
+              <div class="notif-desc">AQI reached Poor (142) in Delhi zones.</div>
+            </div>
+          </div>
+          <div class="notif-item info">
+            <span class="notif-icon">🛰️</span>
+            <div>
+              <div class="notif-title">Landsat-8 Pass</div>
+              <div class="notif-desc">New thermal imagery successfully synced for Chennai.</div>
+            </div>
+          </div>
+        </div>
+      </div>
       
       <!-- Theme Toggle Button -->
       <button class="app-icon-btn" id="themeToggleBtn" title="Toggle Interface Theme">
@@ -57,7 +84,7 @@
       </button>
       
       <!-- Deploy Sensor CTA Button -->
-      <button class="app-cta-btn" onclick="showToast('Sensor deployment interface initialized. Connecting to nearest ground station...', 'success')">
+      <button class="app-cta-btn" id="deploySensorBtn">
         Deploy Sensor
       </button>
     </div>
@@ -188,7 +215,95 @@
       window.dispatchEvent(new CustomEvent('thermos-theme-change', { detail: { theme: activeLight ? 'light' : 'dark' } }));
     });
   })();
+
+  // Interactive Notifications & Modal Handlers
+  (function() {
+    const notifBtn = document.getElementById('notifBtn');
+    const notifDropdown = document.getElementById('notifDropdown');
+    const deploySensorBtn = document.getElementById('deploySensorBtn');
+    const deployModal = document.getElementById('deployModal');
+    const closeDeployModal = document.getElementById('closeDeployModal');
+    const confirmDeployBtn = document.getElementById('confirmDeployBtn');
+
+    if (notifBtn && notifDropdown) {
+      notifBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        notifDropdown.classList.toggle('active');
+      });
+      document.addEventListener('click', function() {
+        notifDropdown.classList.remove('active');
+      });
+      notifDropdown.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+    }
+
+    if (deploySensorBtn && deployModal) {
+      deploySensorBtn.addEventListener('click', function() {
+        deployModal.classList.add('open');
+      });
+    }
+
+    if (closeDeployModal && deployModal) {
+      closeDeployModal.addEventListener('click', function() {
+        deployModal.classList.remove('open');
+      });
+    }
+
+    if (confirmDeployBtn && deployModal) {
+      confirmDeployBtn.addEventListener('click', function() {
+        const id = document.getElementById('sensorIdInput').value || 'TS-101';
+        const zone = document.getElementById('sensorZoneInput').value;
+        showToast(`Sensor ${id} successfully deployed to ${zone}! Telemetry connection online.`, 'success');
+        deployModal.classList.remove('open');
+      });
+    }
+  })();
 </script>
+
+<!-- Sensor Deployment Modal -->
+<div class="modal-overlay" id="deployModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 style="font-size:1.1rem; font-weight:700; color:var(--text-primary); margin-bottom:0;">🚀 Deploy Ground Sensor</h3>
+      <button class="modal-close-btn" id="closeDeployModal">&times;</button>
+    </div>
+    <div class="modal-body" style="text-align:left;">
+      <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:16px; line-height:1.4;">
+        Register and deploy a virtual thermal ground sensor. Once deployed, the sensor will transmit live readings and reflect on the Heat Map.
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block; font-size:0.7rem; font-weight:700; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">Sensor ID</label>
+        <input type="text" id="sensorIdInput" placeholder="e.g. TS-902" style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid var(--border-divider); border-radius:10px; color:#FFFFFF; outline:none; font-family:inherit;">
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block; font-size:0.7rem; font-weight:700; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">Monitored Zone</label>
+        <select id="sensorZoneInput" style="width:100%; padding:10px 14px; background:var(--bg-secondary); border:1px solid var(--border-divider); border-radius:10px; color:#FFFFFF; outline:none; font-family:inherit; cursor:pointer;">
+          <option>Koramangala</option>
+          <option>Yelahanka</option>
+          <option>Whitefield</option>
+          <option>Peenya</option>
+          <option>Jayanagar</option>
+          <option>Indiranagar</option>
+          <option>Hebbal</option>
+          <option>Electronic City</option>
+        </select>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px;">
+        <div>
+          <label style="display:block; font-size:0.7rem; font-weight:700; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">Latitude</label>
+          <input type="text" id="sensorLatInput" value="12.9352" style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid var(--border-divider); border-radius:10px; color:#FFFFFF; outline:none; font-family:inherit;">
+        </div>
+        <div>
+          <label style="display:block; font-size:0.7rem; font-weight:700; color:var(--text-muted); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">Longitude</label>
+          <input type="text" id="sensorLngInput" value="77.6245" style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid var(--border-divider); border-radius:10px; color:#FFFFFF; outline:none; font-family:inherit;">
+        </div>
+      </div>
+      <button class="app-cta-btn" id="confirmDeployBtn" style="width:100%; padding:12px; display:flex; justify-content:center;">Confirm Deployment</button>
+    </div>
+  </div>
+</div>
+
 {% block extra_js %}{% endblock %}
 </body>
 </html>

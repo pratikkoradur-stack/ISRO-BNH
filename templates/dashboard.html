@@ -312,8 +312,8 @@ function populateDashboard(data) {
   // Gauge circle offset (0 = full, 578 = empty)
   const gaugeCircle = document.getElementById('gaugeCircle');
   if (gaugeCircle) {
-    // Map temp 30-55°C to 578-0 offset
-    const pct = Math.min(1, Math.max(0, (avgTemp - 30) / 25));
+    // Map temp 15-45°C to 578-0 offset for responsive display in all seasons
+    const pct = Math.min(1, Math.max(0, (avgTemp - 15) / 30));
     const offset = 578 - (pct * 578);
     gaugeCircle.setAttribute('stroke-dashoffset', offset.toFixed(0));
   }
