@@ -97,11 +97,15 @@
       <span class="material-symbols-outlined menu-icon">history</span>
       <span>Archive</span>
     </a>
+    <a href="{{ url_for('about') }}" class="sidebar-menu-link {% if request.endpoint == 'about' %}active{% endif %}">
+      <span class="material-symbols-outlined menu-icon">help</span>
+      <span>Support</span>
+    </a>
   </nav>
   
   <div class="sidebar-footer-links">
     <!-- City Selection -->
-    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 4px 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-divider); border-radius: 12px;">
+    <div style="display: flex; align-items: center; gap: 8px; padding: 4px 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-divider); border-radius: 12px;">
       <span style="font-size:0.9rem;">📍</span>
       <select id="citySelect" style="background:transparent; border:none; color:var(--text-primary); font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; outline:none; cursor:pointer; flex:1;">
         <option>Bengaluru, India</option>
@@ -116,15 +120,6 @@
         <option>Lucknow, India</option>
       </select>
     </div>
-    
-    <a href="{{ url_for('about') }}" class="sidebar-foot-link">
-      <span class="material-symbols-outlined" style="font-size:1.1rem;">help</span>
-      <span>Support</span>
-    </a>
-    <a href="{{ url_for('about') }}#api" class="sidebar-foot-link">
-      <span class="material-symbols-outlined" style="font-size:1.1rem;">code</span>
-      <span>API</span>
-    </a>
   </div>
   
   <!-- Critical Alerts Indicator -->

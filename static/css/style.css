@@ -50,7 +50,12 @@
   --space-6:          48px;
 
   /* Card metrics */
-  --radius-card:      24px;
+  --radius-card:      28px;
+  --radius-xs:        6px;
+  --radius-sm:        12px;
+  --radius-md:        18px;
+  --radius-lg:        28px;
+  --radius-xl:        36px;
   --padding-card:     28px;
 
   /* Layout dimensions */
@@ -896,8 +901,8 @@ body.light-theme .rec-card.active {
 }
 
 .feature-card {
-  background: white;
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--border-divider);
   border-radius: var(--radius-lg);
   padding: 32px;
   transition: var(--transition);
@@ -975,9 +980,9 @@ body.light-theme .rec-card.active {
   margin-top: 48px;
 }
 .team-card {
-  background: white;
+  background: var(--bg-card);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-divider);
   padding: 36px 28px;
   text-align: center;
   transition: var(--transition);
@@ -1297,8 +1302,8 @@ body.light-theme .select-styled option {
 
 /* ─── About Page ─── */
 .adv-card {
-  background: white;
-  border: 1px solid var(--border);
+  background: var(--bg-card);
+  border: 1px solid var(--border-divider);
   border-radius: var(--radius-lg);
   padding: 32px;
   text-align: center;
@@ -1404,6 +1409,17 @@ body.light-theme .card {
 
 body.light-theme .card:hover {
   border-color: rgba(46, 226, 230, 0.4) !important;
+}
+
+body.light-theme .feature-card,
+body.light-theme .team-card,
+body.light-theme .adv-card {
+  background: #FFFFFF !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+  color: #0F172A !important;
+}
+body.light-theme .team-skills li {
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
 
 body.light-theme .quick-action-link {
