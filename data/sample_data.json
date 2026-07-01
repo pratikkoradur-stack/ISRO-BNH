@@ -1,0 +1,127 @@
+{
+  "city": "Bengaluru, India",
+  "date": "May 20, 2026",
+  "overview": {
+    "avg_land_temp": 42.6,
+    "max_hotspot": 57.3,
+    "risk_zones": 128,
+    "population_at_risk": 2400000
+  },
+  "hotspot_alerts": [
+    {"zone": "Koramangala", "severity": "Very High", "temp": 57.3, "lat": 12.9352, "lng": 77.6245},
+    {"zone": "Yelahanka", "severity": "High", "temp": 53.1, "lat": 13.1007, "lng": 77.5963},
+    {"zone": "Whitefield", "severity": "High", "temp": 51.8, "lat": 12.9698, "lng": 77.7499},
+    {"zone": "Peenya", "severity": "Moderate", "temp": 48.4, "lat": 13.0291, "lng": 77.5188},
+    {"zone": "Jayanagar", "severity": "Moderate", "temp": 46.2, "lat": 12.9308, "lng": 77.5838},
+    {"zone": "Indiranagar", "severity": "High", "temp": 52.0, "lat": 12.9719, "lng": 77.6412},
+    {"zone": "Hebbal", "severity": "Moderate", "temp": 47.5, "lat": 13.0350, "lng": 77.5970},
+    {"zone": "Electronic City", "severity": "High", "temp": 50.9, "lat": 12.8399, "lng": 77.6770}
+  ],
+  "heat_points": [
+    {"lat": 12.9352, "lng": 77.6245, "intensity": 1.0},
+    {"lat": 12.9400, "lng": 77.6300, "intensity": 0.95},
+    {"lat": 12.9500, "lng": 77.6100, "intensity": 0.85},
+    {"lat": 13.1007, "lng": 77.5963, "intensity": 0.88},
+    {"lat": 13.0900, "lng": 77.6000, "intensity": 0.80},
+    {"lat": 12.9698, "lng": 77.7499, "intensity": 0.86},
+    {"lat": 12.9750, "lng": 77.7400, "intensity": 0.78},
+    {"lat": 13.0291, "lng": 77.5188, "intensity": 0.74},
+    {"lat": 13.0200, "lng": 77.5300, "intensity": 0.70},
+    {"lat": 12.9308, "lng": 77.5838, "intensity": 0.72},
+    {"lat": 12.9250, "lng": 77.5900, "intensity": 0.65},
+    {"lat": 12.9719, "lng": 77.6412, "intensity": 0.87},
+    {"lat": 12.9800, "lng": 77.6500, "intensity": 0.82},
+    {"lat": 13.0350, "lng": 77.5970, "intensity": 0.75},
+    {"lat": 12.8399, "lng": 77.6770, "intensity": 0.83},
+    {"lat": 12.8500, "lng": 77.6700, "intensity": 0.76},
+    {"lat": 12.9600, "lng": 77.6600, "intensity": 0.90},
+    {"lat": 12.9450, "lng": 77.6350, "intensity": 0.88},
+    {"lat": 13.0100, "lng": 77.5700, "intensity": 0.68},
+    {"lat": 12.9100, "lng": 77.6900, "intensity": 0.77}
+  ],
+  "zones": {
+    "Koramangala": {
+      "heat_contributors": {
+        "low_vegetation": 42,
+        "built_up_density": 28,
+        "surface_material": 16,
+        "atmospheric": 9,
+        "others": 5
+      },
+      "vegetation_cover": 18,
+      "city_avg_vegetation": 32,
+      "built_up_density": 78,
+      "city_avg_density": 54,
+      "ndvi": 0.18,
+      "heat_impact": "High",
+      "ai_insight": "Low vegetation cover and high built-up density are the primary drivers of heat in this zone. Increasing tree cover by 20% could reduce average temperature by 2.8°C.",
+      "temp_trend": [38.2, 39.5, 40.1, 41.3, 42.6, 43.8, 44.5, 45.2, 46.1, 45.8, 44.9, 44.2]
+    },
+    "Yelahanka": {
+      "heat_contributors": {
+        "low_vegetation": 35,
+        "built_up_density": 32,
+        "surface_material": 20,
+        "atmospheric": 8,
+        "others": 5
+      },
+      "vegetation_cover": 24,
+      "city_avg_vegetation": 32,
+      "built_up_density": 62,
+      "city_avg_density": 54,
+      "ndvi": 0.25,
+      "heat_impact": "Moderate",
+      "ai_insight": "Surface material albedo is a significant factor in Yelahanka. Cool roof implementation could reduce temperatures by up to 2.1°C in this region.",
+      "temp_trend": [36.5, 37.8, 38.9, 39.7, 40.5, 41.2, 42.0, 42.5, 41.8, 41.2, 40.7, 40.1]
+    },
+    "Whitefield": {
+      "heat_contributors": {
+        "low_vegetation": 38,
+        "built_up_density": 30,
+        "surface_material": 18,
+        "atmospheric": 10,
+        "others": 4
+      },
+      "vegetation_cover": 21,
+      "city_avg_vegetation": 32,
+      "built_up_density": 70,
+      "city_avg_density": 54,
+      "ndvi": 0.21,
+      "heat_impact": "High",
+      "ai_insight": "Whitefield's rapid IT infrastructure growth has significantly reduced green cover. Green corridors could improve air circulation and reduce the urban heat island effect.",
+      "temp_trend": [37.0, 38.2, 39.4, 40.6, 41.8, 42.9, 43.5, 43.8, 43.2, 42.5, 41.9, 41.3]
+    },
+    "Peenya": {
+      "heat_contributors": {
+        "low_vegetation": 30,
+        "built_up_density": 25,
+        "surface_material": 30,
+        "atmospheric": 12,
+        "others": 3
+      },
+      "vegetation_cover": 28,
+      "city_avg_vegetation": 32,
+      "built_up_density": 58,
+      "city_avg_density": 54,
+      "ndvi": 0.28,
+      "heat_impact": "Moderate",
+      "ai_insight": "Industrial surface materials with low albedo dominate Peenya. Targeted cool surface replacement could yield significant temperature reductions.",
+      "temp_trend": [35.0, 36.2, 37.5, 38.8, 40.1, 41.0, 41.8, 42.1, 41.5, 40.8, 40.2, 39.7]
+    }
+  },
+  "strategies": [
+    {"name": "Increase Tree Cover", "icon": "🌳", "temp_reduction": -2.8, "energy_savings": "18.7%", "cost_crore": 48, "benefit_ratio": 3.2, "population": 1900000},
+    {"name": "Cool Roof Implementation", "icon": "🏠", "temp_reduction": -2.1, "energy_savings": "14.2%", "cost_crore": 32, "benefit_ratio": 2.8, "population": 1400000},
+    {"name": "Green Corridors", "icon": "🌿", "temp_reduction": -1.9, "energy_savings": "11.5%", "cost_crore": 25, "benefit_ratio": 2.4, "population": 1100000},
+    {"name": "Water Bodies Restoration", "icon": "💧", "temp_reduction": -1.6, "energy_savings": "9.8%", "cost_crore": 20, "benefit_ratio": 2.1, "population": 900000},
+    {"name": "Hybrid Green + Cool Roof", "icon": "🏙️", "temp_reduction": -6.5, "energy_savings": "32.4%", "cost_crore": 75, "benefit_ratio": 4.1, "population": 3200000, "recommended": true}
+  ],
+  "simulation_base": {
+    "avg_temp": 42.6,
+    "max_hotspot": 57.3,
+    "hotspot_count": 128,
+    "area_sqkm": 130
+  },
+  "timeline": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  "future_risk": [44.1, 44.8, 45.6, 46.3, 47.1, 47.9, 48.5, 49.0, 49.6, 50.1, 50.8, 51.4]
+}

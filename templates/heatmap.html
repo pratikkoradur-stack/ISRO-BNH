@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Heat Map{% endblock %}
+{% block page_title %}Interactive Heat Map{% endblock %}
+{% block page_subtitle %}Urban heat stress zones — click any zone for detailed insights{% endblock %}
+
+{% block content %}
+
+<!-- Controls Bar -->
+<div class="card card-body" style="margin-bottom:20px;padding:16px 20px;">
+  <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);">City:</span>
+      <select class="select-styled" id="mapCity">
+        <option>Bengaluru, India</option>
+        <option>Chennai, India</option>
+        <option>Delhi, India</option>
+        <option>Mumbai, India</option>
+        <option>Hyderabad, India</option>
+        <option>Kolkata, India</option>
+        <option>Pune, India</option>
+        <option>Ahmedabad, India</option>
+        <option>Jaipur, India</option>
+        <option>Lucknow, India</option>
+      </select>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);">Layer:</span>
+      <select class="select-styled" id="mapLayer">
+        <option value="heat">Heat Intensity</option>
+        <option value="risk">Risk Zones</option>
+        <option value="vegetation">Vegetation</option>
+      </select>
+    </div>
+    <div class="live-badge" style="margin-left:auto;">
+      <span class="live-dot"></span> Live Data — May 20, 2026
+    </div>
+  </div>
+</div>
+
+<!-- Map + Legend -->
+<div style="display:grid;grid-template-columns:1fr 260px;gap:20px;align-items:start;">
+  <div class="card" style="overflow:hidden;">
+    <div id="fullmap-container"></div>
+  </div>
+
+  <!-- Legend & Stats Panel -->
+  <div style="display:flex;flex-direction:column;gap:16px;">
+    <!-- Legend -->
+    <div class="card card-body">
+      <h4 style="margin-bottom:14px;font-size:0.9rem;">🌡️ Temperature Scale</h4>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:20px;height:20px;background:var(--accent-heat);border-radius:4px;flex-shrink:0;"></div>
+          <span style="font-size:0.8rem;font-weight:600;color:var(--text-primary);">55°C+ — Critical</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:20px;height:20px;background:var(--accent-orange);border-radius:4px;flex-shrink:0;"></div>
+          <span style="font-size:0.8rem;font-weight:600;color:var(--text-primary);">50–55°C — Very High</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:20px;height:20px;background:var(--accent-warning);border-radius:4px;flex-shrink:0;"></div>
+          <span style="font-size:0.8rem;font-weight:600;color:var(--text-primary);">45–50°C — High</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:20px;height:20px;background:#E9C46A;border-radius:4px;flex-shrink:0;"></div>
+          <span style="font-size:0.8rem;font-weight:600;color:var(--text-primary);">40–45°C — Moderate</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:20px;height:20px;background:var(--accent-green);border-radius:4px;flex-shrink:0;"></div>
+          <span style="font-size:0.8rem;font-weight:600;color:var(--text-primary);">&lt;40°C — Low</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hotspot Summary -->
+    <div class="card card-body">
+      <h4 style="margin-bottom:14px;font-size:0.9rem;">⚠️ Zone Summary</h4>
+      <div id="zoneSummary" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="card card-body" style="background:rgba(255,255,255,0.01); border:1px solid var(--border-divider);">
+      <div style="color:var(--text-primary);">
+        <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;opacity:0.8;margin-bottom:12px;color:var(--accent-cyan);">📊 Map Stats</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div style="text-align:center;">
+            <div style="font-size:1.4rem;font-weight:900;" class="premium-number">128</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);">Risk Zones</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:1.4rem;font-weight:900;" class="premium-number">32 km²</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);">Area Covered</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:1.4rem;font-weight:900;" class="premium-number">42.6°C</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);">Avg Temp</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:1.4rem;font-weight:900;" class="premium-number">2.4M</div>
+            <div style="font-size:0.72rem;color:var(--text-muted);">At Risk</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <a href="{{ url_for('analytics') }}" class="btn btn-primary" style="justify-content:center;">
+      📊 Analyze Drivers →
+    </a>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/heatmap.js') }}"></script>
+{% endblock %}

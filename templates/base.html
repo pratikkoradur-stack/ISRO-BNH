@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="THERMOS AI — AI-powered Urban Heat Mitigation and Cooling Strategy Platform by Team Bugs2Bucks for ISRO Bharatiya Antariksh Hackathon 2026">
+  <meta name="keywords" content="urban heat island, AI, machine learning, Bengaluru, ISRO, heat mitigation, satellite data">
+  <meta name="author" content="Team Bugs2Bucks — Dayananda Sagar University">
+  <title>{% block title %}THERMOS AI{% endblock %} — Urban Heat Intelligence</title>
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>🌡️</text></svg>">
+  
+  <!-- Fonts & Icons from Screenshot -->
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+<script>
+  (function() {
+    const savedTheme = localStorage.getItem('thermos-theme') || 'dark';
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+    }
+  })();
+</script>
+
+<!-- Global Top Navigation Bar -->
+<header class="app-header">
+  <a href="{{ url_for('index') }}" class="app-logo">Thermos AI</a>
+  
+  <nav class="app-nav">
+    <a class="app-nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">Overview</a>
+    <a class="app-nav-link {% if request.endpoint == 'heatmap' %}active{% endif %}" href="{{ url_for('heatmap') }}">Heat Map</a>
+    <a class="app-nav-link {% if request.endpoint == 'analytics' %}active{% endif %}" href="{{ url_for('analytics') }}">Analytics</a>
+    <a class="app-nav-link {% if request.endpoint == 'simulator' %}active{% endif %}" href="{{ url_for('simulator') }}">Simulator</a>
+  </nav>
+  
+  <div class="app-header-actions">
+    <div class="app-search-bar">
+      <span class="material-symbols-outlined" style="font-size: 1.2rem; color: var(--text-muted);">search</span>
+      <input class="app-search-input" placeholder="Search sensors..." type="text">
+    </div>
+    
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <!-- Notification Icon -->
+      <button class="app-icon-btn" onclick="showToast('No new notifications', 'info')">
+        <span class="material-symbols-outlined">notifications</span>
+      </button>
+      
+      <!-- Theme Toggle Button -->
+      <button class="app-icon-btn" id="themeToggleBtn" title="Toggle Interface Theme">
+        <span class="material-symbols-outlined" id="themeToggleIcon">dark_mode</span>
+      </button>
+      
+      <!-- Deploy Sensor CTA Button -->
+      <button class="app-cta-btn" onclick="showToast('Sensor deployment interface initialized. Connecting to nearest ground station...', 'success')">
+        Deploy Sensor
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Global Left Sidebar -->
+<aside class="app-sidebar" id="sidebar">
+  <div class="sidebar-hub-card">
+    <div class="sidebar-hub-icon">
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+    </div>
+    <div>
+      <div class="sidebar-hub-title">Main Hub</div>
+      <div class="sidebar-hub-sub">Global Monitoring</div>
+    </div>
+  </div>
+  
+  <nav class="sidebar-menu">
+    <a href="{{ url_for('dashboard') }}" class="sidebar-menu-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+      <span class="material-symbols-outlined menu-icon" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+      <span>Overview</span>
+    </a>
+    <a href="{{ url_for('heatmap') }}" class="sidebar-menu-link {% if request.endpoint == 'heatmap' %}active{% endif %}">
+      <span class="material-symbols-outlined menu-icon">sensors</span>
+      <span>Live Sensors</span>
+    </a>
+    <a href="{{ url_for('recommendations') }}" class="sidebar-menu-link {% if request.endpoint == 'recommendations' %}active{% endif %}">
+      <span class="material-symbols-outlined menu-icon">warning</span>
+      <span>Risk Prediction</span>
+    </a>
+    <a href="{{ url_for('simulator') }}" class="sidebar-menu-link {% if request.endpoint == 'simulator' %}active{% endif %}">
+      <span class="material-symbols-outlined menu-icon">domain</span>
+      <span>City Planning</span>
+    </a>
+    <a href="{{ url_for('analytics') }}" class="sidebar-menu-link {% if request.endpoint == 'analytics' %}active{% endif %}">
+      <span class="material-symbols-outlined menu-icon">history</span>
+      <span>Archive</span>
+    </a>
+  </nav>
+  
+  <div class="sidebar-footer-links">
+    <!-- City Selection -->
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; padding: 4px 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-divider); border-radius: 12px;">
+      <span style="font-size:0.9rem;">📍</span>
+      <select id="citySelect" style="background:transparent; border:none; color:var(--text-primary); font-family:'Plus Jakarta Sans',sans-serif; font-size:0.8rem; font-weight:600; outline:none; cursor:pointer; flex:1;">
+        <option>Bengaluru, India</option>
+        <option>Chennai, India</option>
+        <option>Delhi, India</option>
+        <option>Mumbai, India</option>
+        <option>Hyderabad, India</option>
+        <option>Kolkata, India</option>
+        <option>Pune, India</option>
+        <option>Ahmedabad, India</option>
+        <option>Jaipur, India</option>
+        <option>Lucknow, India</option>
+      </select>
+    </div>
+    
+    <a href="{{ url_for('about') }}" class="sidebar-foot-link">
+      <span class="material-symbols-outlined" style="font-size:1.1rem;">help</span>
+      <span>Support</span>
+    </a>
+    <a href="{{ url_for('about') }}#api" class="sidebar-foot-link">
+      <span class="material-symbols-outlined" style="font-size:1.1rem;">code</span>
+      <span>API</span>
+    </a>
+  </div>
+  
+  <!-- Critical Alerts Indicator -->
+  <div class="sidebar-alerts-card">
+    <span>Critical Alerts</span>
+    <span class="sidebar-pulse-dot"></span>
+  </div>
+</aside>
+
+<!-- Main Page Content Wrapper -->
+<div class="app-main-canvas">
+  {% block content %}{% endblock %}
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+  // Global city management
+  window.THERMOS = window.THERMOS || {};
+  window.THERMOS.getCity = function() {
+    const sel = document.getElementById('citySelect');
+    return sel ? sel.value : 'Bengaluru, India';
+  };
+  
+  // City change event
+  document.getElementById('citySelect')?.addEventListener('change', function() {
+    const city = this.value;
+    window.dispatchEvent(new CustomEvent('thermos-city-change', { detail: { city } }));
+    // Reload page to refresh all data for new city
+    const url = new URL(window.location.href);
+    url.searchParams.set('city', city);
+    window.location.href = url.toString();
+  });
+  
+  // Restore city selection from URL
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    const city = params.get('city');
+    if (city) {
+      const sel = document.getElementById('citySelect');
+      if (sel) {
+        for (let opt of sel.options) {
+          if (opt.value === city) { sel.value = city; break; }
+        }
+      }
+    }
+  })();
+
+  // Theme Toggle Button Event
+  (function() {
+    const themeBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeToggleIcon');
+    
+    const updateButtonUI = () => {
+      const isLight = document.body.classList.contains('light-theme');
+      if (themeIcon) themeIcon.textContent = isLight ? 'light_mode' : 'dark_mode';
+    };
+    
+    updateButtonUI();
+    
+    themeBtn?.addEventListener('click', function() {
+      const activeLight = document.body.classList.toggle('light-theme');
+      localStorage.setItem('thermos-theme', activeLight ? 'light' : 'dark');
+      updateButtonUI();
+      window.dispatchEvent(new CustomEvent('thermos-theme-change', { detail: { theme: activeLight ? 'light' : 'dark' } }));
+    });
+  })();
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

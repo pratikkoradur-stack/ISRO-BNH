@@ -1,0 +1,430 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Page layout overrides for pixel-perfect premium theme */
+  .topbar {
+    display: none !important;
+  }
+  
+  .main-content {
+    padding-top: var(--space-4);
+    background-color: var(--bg-primary) !important;
+  }
+
+  .card {
+    background: var(--bg-card) !important;
+    border: var(--border) !important;
+    border-radius: var(--radius-card) !important;
+    padding: var(--padding-card) !important;
+    box-shadow: var(--shadow-premium) !important;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card:hover {
+    transform: scale(1.02);
+    background: var(--bg-card-hover) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+  }
+
+  .progress-bar-wrap {
+    background: rgba(255, 255, 255, 0.02) !important;
+    border-radius: 100px;
+    height: 8px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .select-styled {
+    background: #0D1824;
+    border: var(--border);
+    color: var(--text-primary);
+    padding: 10px 18px;
+    border-radius: 12px;
+    outline: none;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.2s ease;
+  }
+  .select-styled:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  /* Outlined live status badge */
+  .live-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(46, 226, 230, 0.3);
+    background: rgba(46, 226, 230, 0.08);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-cyan);
+  }
+
+  .live-pill-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent-cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--accent-cyan);
+    animation: pulseCyan 1.6s infinite;
+  }
+
+  @keyframes pulseCyan {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  /* Interactive gradient NDVI scale bar */
+  .ndvi-gradient-bar {
+    height: 8px;
+    background: linear-gradient(to right, var(--accent-heat) 0%, var(--accent-orange) 35%, var(--accent-warning) 65%, var(--accent-green) 100%);
+    border-radius: 100px;
+    position: relative;
+    margin: 14px 0 6px 0;
+  }
+
+  .ndvi-needle {
+    position: absolute;
+    top: -5px;
+    width: 6px;
+    height: 18px;
+    background: #FFFFFF;
+    border-radius: 100px;
+    box-shadow: 0 0 10px rgba(255,255,255,0.8);
+    transition: left 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Floating animation */
+  @keyframes floatCity {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+
+  .stat-metric-box {
+    flex: 1;
+    text-align: left;
+    padding: 16px 20px;
+    border-right: 1px solid var(--border-divider);
+  }
+  .stat-metric-box:last-child {
+    border-right: none;
+  }
+
+  /* Subtitle displaying formula font styles */
+  .subtitle-formula {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ───── STEP 1: PREMIUM TOP HEADER ───── -->
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:32px; border-bottom:1px solid var(--border-divider); padding-bottom:24px;">
+  <div>
+    <!-- h1 matches 48px size custom display -->
+    <h1 style="font-size: 48px; font-weight: 900; letter-spacing: -0.04em; color: var(--text-primary);">AI Driver Analysis</h1>
+    <p style="font-size: 15px; color: var(--text-secondary); margin-top: 4px;">Understand the environmental factors influencing urban heat.</p>
+  </div>
+  
+  <div style="display:flex; align-items:center; gap:20px;">
+    <!-- Live Indicator -->
+    <div class="live-pill">
+      <span class="live-pill-dot"></span>
+      <span>Live</span>
+    </div>
+    
+    <!-- Date -->
+    <span style="font-size: 15px; color: var(--text-secondary); font-weight: 600;">May 20, 2026</span>
+    
+    <!-- Satellite Sync State -->
+    <div style="display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; color:var(--accent-cyan); text-transform:uppercase; letter-spacing:0.04em;">
+      <span>Syncing</span>
+      <span style="width:4px; height:4px; background:var(--accent-cyan); border-radius:50%; box-shadow:0 0 6px var(--accent-cyan);"></span>
+    </div>
+
+    <!-- Notification Icon -->
+    <div style="font-size: 20px; color: var(--text-secondary); cursor:pointer; position:relative; width: 36px; height: 36px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); border:var(--border); border-radius:50%;">
+      🔔
+      <span style="position:absolute; top:8px; right:8px; width:6px; height:6px; background:var(--accent-orange); border-radius:50%;"></span>
+    </div>
+
+    <!-- Profile Avatar -->
+    <div style="width:36px; height:36px; border-radius:50%; background:var(--bg-secondary); border: 1.5px solid var(--accent-cyan); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; color:var(--accent-cyan); cursor:pointer;" title="User Profile">
+      US
+    </div>
+  </div>
+</div>
+
+<!-- ───── STEP 2: FUTURISTIC CITY SCANNED HERO PANEL (170px Height) ───── -->
+<div class="content-grid" style="margin-bottom: 32px;">
+  <div class="col-12">
+    <div class="card" style="height:170px; display:flex; align-items:center; justify-content:space-between; padding:20px 32px !important; gap:32px; background:var(--bg-secondary) !important; position:relative; overflow:hidden;">
+      
+      <!-- Ambient background grid inside hero -->
+      <div style="position:absolute; inset:0; background-image:radial-gradient(rgba(46, 226, 230, 0.03) 1px, transparent 1px); background-size: 16px 16px; pointer-events:none; z-index:0;"></div>
+      
+      <!-- Left Side: Zone selection, search & filters -->
+      <div style="display:flex; flex-direction:column; gap:12px; z-index:1; min-width: 250px;">
+        <span style="font-size:13px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); font-weight:700;">Zone Selection</span>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:1.15rem; color:var(--accent-cyan);">📍</span>
+          <select class="select-styled" id="zoneSelect" style="padding:8px 36px 8px 14px; font-size:15px; font-weight:700;">
+            <option value="Koramangala" selected>Koramangala</option>
+            <option value="Yelahanka">Yelahanka</option>
+            <option value="Whitefield">Whitefield</option>
+            <option value="Peenya">Peenya</option>
+            <option value="Jayanagar">Jayanagar</option>
+          </select>
+        </div>
+        <!-- Search and Filters placeholder block to match style -->
+        <div style="display:flex; gap:8px;">
+          <input type="text" placeholder="Search parameters..." style="background:rgba(255,255,255,0.02); border:var(--border); color:#FFFFFF; font-size:12px; padding:6px 10px; border-radius:6px; width:130px; outline:none;">
+          <button style="background:rgba(255,255,255,0.03); border:var(--border); color:var(--text-secondary); font-size:11px; padding:4px 8px; border-radius:6px; cursor:pointer;">Filters</button>
+        </div>
+      </div>
+      
+      <!-- Center: 2D/3D Wireframe Scanning City Canvas -->
+      <div id="cityCanvasWrapper" style="flex:1; height:100%; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:1;">
+        <canvas id="futuristicCityCanvas" style="width:100%; height:100%; display:block; filter: drop-shadow(0 0 10px rgba(46, 226, 230, 0.15));"></canvas>
+      </div>
+
+      <!-- Right Side: Real-time AI Analysis -->
+      <div style="display:flex; flex-direction:column; gap:6px; text-align:right; z-index:1; min-width: 220px; border-left: 1px solid var(--border-divider); padding-left: 32px;">
+        <span style="font-size:13px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-muted); font-weight:700;">Real-time AI Analysis</span>
+        <div style="display:flex; flex-direction:column; gap:4px; margin-top:2px;">
+          <div style="font-size:13px; color:var(--text-secondary);">Satellite Signal: <span style="color:var(--accent-cyan); font-weight:700;">94% Excellent</span></div>
+          <div style="font-size:13px; color:var(--text-secondary);">Last Updated: <span style="color:var(--text-primary); font-weight:600;" id="updatedTimer">20 sec ago</span></div>
+          <div style="font-size:13px; color:var(--text-secondary); display:flex; align-items:center; gap:6px; justify-content:flex-end; margin-top:2px;">
+            <span>Processing Status:</span>
+            <span style="font-weight:700; color:var(--accent-green); text-transform:uppercase; font-size:11px;">Active</span>
+            <span style="width:6px; height:6px; background:var(--accent-green); border-radius:50%; display:inline-block; box-shadow:0 0 6px var(--accent-green);"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ───── STEP 3: HIGH-FIDELITY MAIN DASHBOARD CARDS ───── -->
+<div class="content-grid" style="margin-bottom: 32px;">
+
+  <!-- CARD 1: Heat Contributors (col-4) -->
+  <div class="col-4">
+    <div class="card" style="height:100%; display:flex; flex-direction:column; justify-content:space-between; gap:20px;">
+      <div>
+        <h3 style="font-size:20px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+          <span>🔥</span> Heat Contributors
+        </h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-top:2px;">Factors driving heat impact</p>
+      </div>
+
+      <!-- Donut Chart Container -->
+      <div style="position:relative; width:180px; height:180px; margin:0 auto;">
+        <canvas id="contributorsDonutChart"></canvas>
+        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); text-align:center;">
+          <div class="premium-number" style="font-size:2.1rem; color:var(--text-primary);" id="centerPercent">42%</div>
+          <div style="font-size:11px; color:var(--text-muted); font-weight:700; text-transform:uppercase; margin-top:2px; letter-spacing:0.02em;" id="centerLabel">Low Veg</div>
+        </div>
+      </div>
+
+      <!-- Legend using colored dots -->
+      <div id="contributorsLegendStack" style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+        <!-- Hydrated by JS -->
+      </div>
+
+      <!-- AI Summary Bottom Box -->
+      <div style="display:flex; align-items:center; gap:10px; background:rgba(255, 107, 61, 0.05); border:1px solid rgba(255, 107, 61, 0.15); padding:12px 16px; border-radius:14px; font-size:13px; color:var(--accent-orange); margin-top:12px;">
+        <span>🤖</span>
+        <span id="contributorShortQuote">Low vegetation is the primary contributor in this region.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD 2: Vegetation Impact & Metrics (col-4) -->
+  <div class="col-4">
+    <div class="card" style="height:100%; display:flex; flex-direction:column; justify-content:space-between; gap:20px;">
+      <div>
+        <h3 style="font-size:20px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+          <span>🌿</span> Vegetation Impact
+        </h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-top:2px;">Zonal vegetation coverage stats</p>
+      </div>
+
+      <!-- Progress meters -->
+      <div style="display:flex; flex-direction:column; gap:18px; flex:1; justify-content:center;">
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:15px; margin-bottom:6px; font-weight:600;">
+            <span style="color:var(--text-secondary);">Vegetation Cover</span>
+            <span style="color:var(--accent-green); font-weight:800;" id="vegCoverPercent">18%</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="vegBarFill" style="width:18%; background:var(--accent-green);"></div>
+          </div>
+          <div style="font-size:13px; color:var(--text-muted); margin-top:4px;">City Avg: <span id="vegCityAvg">32%</span></div>
+        </div>
+
+        <div>
+          <div style="display:flex; justify-content:space-between; font-size:15px; margin-bottom:6px; font-weight:600;">
+            <span style="color:var(--text-secondary);">Built-up Density</span>
+            <span style="color:var(--accent-orange); font-weight:800;" id="builtDensityPercent">78%</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="builtBarFill" style="width:78%; background:var(--accent-orange);"></div>
+          </div>
+          <div style="font-size:13px; color:var(--text-muted); margin-top:4px;">City Avg: <span id="builtCityAvg">54%</span></div>
+        </div>
+
+        <!-- NDVI Index gradient bar -->
+        <div style="background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.03); border-radius:16px; padding:14px; position:relative;">
+          <div style="font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em;">🌱 NDVI INDEX</div>
+          <div class="premium-number" id="ndviValText" style="font-size:1.45rem; color:var(--text-primary); margin-top:2px;">0.18</div>
+          <div class="ndvi-gradient-bar">
+            <div class="ndvi-needle" id="ndviThumbIndicator" style="left:18%;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted);">
+            <span>0 (Barren)</span>
+            <span>0.5</span>
+            <span>1.0 (Dense)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Status Card: Overall Heat Impact with faint contour background -->
+      <div class="ai-status-card" style="background: rgba(255, 107, 61, 0.04); border: 1px solid rgba(255, 107, 61, 0.15); border-radius: 16px; padding: 18px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; margin-top:8px;">
+        <!-- Orange Glow -->
+        <div style="position: absolute; right: -20px; top: -20px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(255, 107, 61, 0.2) 0%, transparent 70%); pointer-events: none; z-index: 1;"></div>
+        
+        <!-- Faint Contour Lines Vector -->
+        <svg style="position: absolute; right: 0; bottom: 0; width: 120px; height: 80px; opacity: 0.25; pointer-events: none;" viewBox="0 0 120 80">
+          <path d="M40 80 C 60 70, 70 50, 90 60 C 100 65, 110 55, 120 70" fill="none" stroke="#FF6B3D" stroke-width="1.2" />
+          <path d="M20 80 C 50 60, 60 30, 90 40 C 105 45, 110 30, 120 50" fill="none" stroke="#FF6B3D" stroke-width="1.2" />
+          <path d="M0 80 C 30 50, 50 10, 80 20 C 100 25, 110 10, 120 30" fill="none" stroke="#FF6B3D" stroke-width="1.2" />
+          <path d="M0 60 C 20 30, 40 0, 70 5 C 90 10, 100 0, 120 10" fill="none" stroke="#FF6B3D" stroke-width="1.2" />
+        </svg>
+
+        <div style="display:flex; flex-direction:column; gap:4px; z-index: 2;">
+          <span style="font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted);">Overall Heat Impact</span>
+          <span style="font-size:1.45rem; font-weight:900; color:var(--accent-orange); letter-spacing:-0.03em;" id="overallImpactLevel">HIGH</span>
+          <span style="font-size:13px; color:var(--text-secondary);">Significantly higher than average</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARD 3: Temperature Trend (col-4) -->
+  <div class="col-4">
+    <div class="card" style="height:100%; display:flex; flex-direction:column; justify-content:space-between; gap:20px; padding:28px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <h3 style="font-size:20px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:8px;">
+            <span>📈</span> Temperature Trend
+          </h3>
+          <p style="font-size:13px; color:var(--text-muted); margin-top:2px;">12-month land surface temperature</p>
+        </div>
+        
+        <select class="select-styled" style="font-size:12px; padding:4px 20px 4px 8px; border-radius:6px;" id="unitToggle">
+          <option value="c" selected>&deg;C</option>
+          <option value="f">&deg;F</option>
+        </select>
+      </div>
+
+      <!-- Trend Chart -->
+      <div style="height:140px; margin-bottom:4px;">
+        <canvas id="zonalTempTrendChart"></canvas>
+      </div>
+
+      <!-- Dotted future risk prediction -->
+      <div style="border-top:1px solid var(--border-divider); padding-top:16px; margin-top:4px;">
+        <div style="font-size:15px; font-weight:700; color:var(--text-primary); display:flex; align-items:center; gap:6px; margin-bottom:8px;">
+          <span>⚠️</span> Future Risk Prediction
+        </div>
+        <div style="height:55px;">
+          <canvas id="zonalRiskDottedChart"></canvas>
+        </div>
+        <div style="font-size:13px; color:var(--text-muted); text-align:center; margin-top:6px;">Projected 2024-2025 trend (AI-predicted)</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ───── STEP 4: AI INSIGHTS & 5 KEY METRICS ROW (col-12) ───── -->
+<div class="card" style="padding: 28px; display:flex; gap:32px; align-items:stretch; border-color:var(--border-divider);">
+  
+  <!-- Left Column: AI Insight Brain Badge -->
+  <div style="width:30%; display:flex; gap:20px; border-right:1px solid var(--border-divider); padding-right:32px;">
+    <!-- Glowing green brain visual -->
+    <div style="width:60px; height:60px; border-radius:50%; background:rgba(46, 212, 122, 0.08); border:1.5px solid rgba(46, 212, 122, 0.4); display:flex; align-items:center; justify-content:center; font-size:1.6rem; flex-shrink:0; box-shadow:0 0 15px rgba(46, 212, 122, 0.25);">
+      🧠
+    </div>
+    
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <span style="font-size:15px; font-weight:800; color:var(--text-primary);">AI Insight</span>
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.45;" id="aiInsightParagraph">
+        Dense built-up areas with low vegetation and high surface absorption are driving heat intensity in this zone.
+      </p>
+    </div>
+  </div>
+
+  <!-- Right Column: 5 Stat Metric Pillars -->
+  <div style="flex:1; display:flex; align-items:center; justify-content:space-between; padding-left:16px;">
+    
+    <!-- Metric 1: Heat Risk -->
+    <div class="stat-metric-box">
+      <span style="font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); font-weight:700;">🔥 Heat Risk</span>
+      <div class="premium-number" style="font-size:2rem; color:var(--accent-heat); margin-top:4px;" id="metricHeatRisk">72%</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">High / Increase vs last month</div>
+    </div>
+
+    <!-- Metric 2: Green Deficit -->
+    <div class="stat-metric-box">
+      <span style="font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); font-weight:700;">🌿 Green Deficit</span>
+      <div class="premium-number" style="font-size:2rem; color:var(--accent-warning); margin-top:4px;" id="metricGreenDeficit">-14%</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Below City Average / Need trees</div>
+    </div>
+
+    <!-- Metric 3: People Exposed -->
+    <div class="stat-metric-box">
+      <span style="font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); font-weight:700;">👥 People Exposed</span>
+      <div class="premium-number" style="font-size:2rem; color:var(--accent-cyan); margin-top:4px;" id="metricPeopleExposed">32.4K</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">High Exposure / In this zone</div>
+    </div>
+
+    <!-- Metric 4: Trend (YoY) -->
+    <div class="stat-metric-box">
+      <span style="font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); font-weight:700;">📈 Trend (YoY)</span>
+      <div class="premium-number" style="font-size:2rem; color:var(--accent-heat); margin-top:4px;" id="metricYoYTrend">+2.6&deg;C</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Rising / Compared to last year</div>
+    </div>
+
+    <!-- Metric 5: Confidence Score -->
+    <div class="stat-metric-box">
+      <span style="font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-muted); font-weight:700;">🎯 Confidence</span>
+      <div class="premium-number" style="font-size:2rem; color:var(--accent-green); margin-top:4px;" id="metricConfidence">89%</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Very High / Model confidence</div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="THERMOS AI — Space Intelligence for Cool Cities. AI-powered Urban Heat Mitigation platform. Built for ISRO Hackathon 2026.">
+  <title>THERMOS AI — Space Intelligence for Cool Cities</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='28' font-size='28'>🛰️</text></svg>">
+  
+  <!-- Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap">
+  
+  <style>
+    /* ─── Global Variables & Reset ─── */
+    :root {
+      --color-bg: #04080B;
+      --color-bg-card: #0E1B27;
+      --color-text-main: #ECF0F3;
+      --color-text-secondary: #94A3B8;
+      --color-text-muted: #64748B;
+      
+      --accent-orange: #E76F51;
+      --accent-teal: #2A9D8F;
+      --accent-green: #3CD070;
+      
+      --gradient-orange: linear-gradient(135deg, #FF7E5F, #E76F51);
+      --gradient-teal: linear-gradient(135deg, #2A9D8F, #4DB6AC);
+      
+      --border: rgba(255, 255, 255, 0.08);
+      --border-light: rgba(255, 255, 255, 0.05);
+      
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --transition-apple: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--color-bg);
+      color: var(--color-text-main);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Widescreen background grids matching screenshot */
+    body {
+      background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 32px 32px;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      background: radial-gradient(circle 900px at 50% var(--glow-y, 300px), var(--current-glow-color, rgba(46, 226, 230, 0.08)), transparent 85%);
+      pointer-events: none;
+      z-index: 0;
+      transition: background 1.2s ease;
+    }
+
+    /* ─── Floating Header Navigation ─── */
+    .header-nav {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 48px);
+      max-width: 1200px;
+      height: 62px;
+      background: rgba(6, 11, 15, 0.65);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 1000;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+      transition: var(--transition-apple);
+    }
+
+    .nav-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo-symbol {
+      width: 20px;
+      height: 20px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-logo-symbol::before {
+      content: "";
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--accent-orange);
+      border-radius: 50%;
+    }
+
+    .nav-logo-symbol::after {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border: 1.5px solid var(--accent-teal);
+      border-radius: 50%;
+    }
+
+    .nav-logo-text {
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #FFFFFF;
+    }
+
+    .nav-logo-text span {
+      background: var(--gradient-teal);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-link-item {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .nav-link-item:hover {
+      color: #FFFFFF;
+    }
+
+    /* Nav Buttons */
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-header {
+      background: var(--gradient-orange);
+      color: #FFFFFF;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 10px 22px;
+      border-radius: 100px;
+      box-shadow: 0 4px 12px rgba(231, 111, 81, 0.3);
+      transition: var(--transition-apple);
+      white-space: nowrap;
+    }
+
+    .btn-header:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(231, 111, 81, 0.5);
+    }
+
+    .hamburger-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-light);
+      border-radius: 50%;
+      align-items: center;
+    }
+
+    .hamburger-line {
+      width: 14px;
+      height: 1.5px;
+      background: #FFFFFF;
+    }
+
+    /* ─── Hero Section ─── */
+    .welcome-hero-wrap {
+      min-height: 98vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    .hero-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 32px;
+      align-items: center;
+      padding: 130px 24px 80px 24px;
+      position: relative;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    /* Space badge */
+    .space-hackathon-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(42, 157, 143, 0.08);
+      border: 1px solid rgba(42, 157, 143, 0.2);
+      border-radius: 100px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent-teal);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* Giant Title */
+    .hero-title {
+      font-size: clamp(2.8rem, 5vw, 4.4rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      color: #FFFFFF;
+    }
+
+    .hero-title .txt-orange {
+      background: var(--gradient-orange);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-title .txt-teal {
+      background: var(--gradient-teal);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-description {
+      font-size: 0.95rem;
+      font-weight: 450;
+      line-height: 1.6;
+      color: var(--color-text-secondary);
+      max-width: 480px;
+    }
+
+    /* Pipeline Horizontal Steps */
+    .pipeline-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      margin: 12px 0;
+    }
+
+    .pipeline-line {
+      position: absolute;
+      top: 23px;
+      left: 20px;
+      right: 20px;
+      height: 1px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      z-index: 1;
+    }
+
+    .pipeline-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      z-index: 2;
+      text-decoration: none;
+    }
+
+    .pipeline-circle {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem;
+      color: var(--color-text-secondary);
+      transition: var(--transition-apple);
+    }
+
+    .pipeline-card:hover .pipeline-circle {
+      background: rgba(42, 157, 143, 0.1);
+      border-color: var(--accent-teal);
+      color: #FFFFFF;
+      transform: translateY(-2px);
+      box-shadow: 0 0 10px rgba(42, 157, 143, 0.2);
+    }
+
+    .pipeline-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* Bottom CTA Buttons */
+    .hero-ctas {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .btn-main-orange {
+      background: var(--gradient-orange);
+      color: #FFFFFF;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 14px 34px;
+      border-radius: 100px;
+      box-shadow: 0 4px 16px rgba(231, 111, 81, 0.35);
+      transition: var(--transition-apple);
+    }
+
+    .btn-main-orange:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(231, 111, 81, 0.55);
+    }
+
+    .btn-main-simulator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      color: #FFFFFF;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 14px 30px;
+      border-radius: 100px;
+      transition: var(--transition-apple);
+    }
+
+    .btn-main-simulator:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .cube-icon {
+      width: 10px;
+      height: 10px;
+      background: var(--accent-teal);
+      border-radius: 2px;
+      box-shadow: 0 0 6px var(--accent-teal);
+    }
+
+    /* Hero Right Column */
+    .hero-right {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .hero-art-image {
+      width: 100%;
+      max-width: 540px;
+      height: auto;
+      object-fit: contain;
+      border-radius: 20px;
+      filter: drop-shadow(0 15px 40px rgba(0,0,0,0.6));
+    }
+
+    /* Floating Gauge overlay */
+    .floating-stats-widget {
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background: rgba(14, 27, 39, 0.85);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      width: 180px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      animation: floatWidget 4s ease-in-out infinite;
+      z-index: 10;
+    }
+
+    .widget-lbl {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-muted);
+      margin-bottom: 2px;
+    }
+
+    .widget-val {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--accent-orange);
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .widget-status-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .widget-status-dot {
+      width: 5px;
+      height: 5px;
+      background: #EF4444;
+      border-radius: 50%;
+    }
+
+    .widget-status-txt {
+      font-size: 0.72rem;
+      color: var(--color-text-secondary);
+      font-weight: 550;
+    }
+
+    /* Bottom Info Bar */
+    .bottom-info-row {
+      width: calc(100% - 48px);
+      max-width: 1200px;
+      margin: auto auto 24px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 20px;
+      z-index: 5;
+    }
+
+    .info-pills {
+      display: flex;
+      gap: 16px;
+      font-size: 0.78rem;
+      color: var(--color-text-muted);
+      font-weight: 600;
+    }
+
+    .info-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-pill-dot {
+      width: 5px;
+      height: 5px;
+      background: var(--accent-teal);
+      border-radius: 50%;
+    }
+
+    .live-feed-panel {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-light);
+      padding: 6px 14px;
+      border-radius: 100px;
+    }
+
+    .live-feed-beacon {
+      width: 6px;
+      height: 6px;
+      background: #10B981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10B981;
+      animation: pulseBeacon 1.5s infinite;
+    }
+
+    /* ─── Mission Storytelling Timeline Section ─── */
+    .mission-section {
+      max-width: 1200px;
+      margin: 120px auto;
+      padding: 0 24px;
+    }
+
+    .mission-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 80px auto;
+    }
+
+    .mission-header h2 {
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      color: #FFFFFF;
+    }
+
+    .mission-header p {
+      font-size: 1.05rem;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 80px;
+      position: relative;
+    }
+
+    .timeline-nav {
+      position: sticky;
+      top: 140px;
+      height: fit-content;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      padding-left: 24px;
+      border-left: 2px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .timeline-step {
+      position: relative;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      opacity: 0.3;
+      transition: var(--transition-apple);
+    }
+
+    .timeline-step.active {
+      opacity: 1;
+      transform: translateX(8px);
+    }
+
+    .timeline-step::before {
+      content: "";
+      position: absolute;
+      left: -27px;
+      top: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #475569;
+      transition: var(--transition-apple);
+      border: 2px solid var(--color-bg);
+    }
+
+    .timeline-step.active::before {
+      background: var(--accent-teal);
+      box-shadow: 0 0 10px var(--accent-teal);
+      transform: scale(1.5);
+    }
+
+    .step-number {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--accent-teal);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .step-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #FFFFFF;
+      letter-spacing: -0.02em;
+    }
+
+    .step-short-desc {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+      max-width: 280px;
+    }
+
+    .timeline-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 160px;
+    }
+
+    .visual-card-wrapper {
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      scroll-margin-top: 160px;
+    }
+
+    .premium-card {
+      background: rgba(14, 27, 39, 0.55);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      transition: var(--transition-apple);
+      position: relative;
+      overflow: hidden;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .premium-card:hover {
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-top {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 85%;
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #FFFFFF;
+    }
+
+    .card-desc {
+      font-size: 0.95rem;
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+
+    .card-graphic {
+      width: 100%;
+      height: 220px;
+      border-radius: 16px;
+      background: rgba(6, 11, 15, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .satellite-orbit {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      animation: spin 35s linear infinite;
+    }
+    .orbiting-sat {
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.4rem;
+    }
+    .earth-globe {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #0F172A, #0284C7);
+      box-shadow: 0 4px 20px rgba(2, 132, 199, 0.45);
+    }
+
+    .thermal-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 6px;
+      width: 80%;
+      max-width: 320px;
+    }
+    .grid-cell {
+      aspect-ratio: 1;
+      border-radius: 3px;
+      background: #111C24;
+      transition: background 0.6s ease;
+    }
+    .grid-cell.hot {
+      background: var(--accent-orange);
+      box-shadow: 0 0 6px rgba(231, 111, 81, 0.5);
+    }
+    .grid-cell.very-hot {
+      background: #DC2626;
+      box-shadow: 0 0 10px rgba(220, 38, 38, 0.75);
+    }
+    .grid-scanner-line {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-teal), transparent);
+      animation: scanVertical 3s ease-in-out infinite;
+    }
+
+    .factor-container {
+      width: 80%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .factor-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .factor-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+    }
+    .factor-bar-bg {
+      height: 8px;
+      background: #111C24;
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .factor-bar-fill {
+      height: 100%;
+      border-radius: 100px;
+      width: 0%;
+      transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .prediction-chart-mockup {
+      width: 80%;
+      height: 140px;
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .chart-bar {
+      flex: 1;
+      background: #111C24;
+      border-radius: 2px 2px 0 0;
+      height: 20%;
+      transition: height 0.6s;
+    }
+    .chart-bar.predicted {
+      background: linear-gradient(180deg, var(--accent-orange), rgba(231, 111, 81, 0.2));
+    }
+
+    .sim-slider-box {
+      width: 85%;
+      background: rgba(14, 27, 39, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+    .sim-slider-input {
+      width: 100%;
+      accent-color: var(--accent-teal);
+      cursor: pointer;
+      background: #111C24;
+    }
+    .sim-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      text-align: center;
+    }
+    .sim-stat-box {
+      padding: 8px;
+      background: #111C24;
+      border-radius: 8px;
+    }
+    .sim-stat-val {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--accent-teal);
+    }
+    .sim-stat-lbl {
+      font-size: 0.68rem;
+      color: var(--color-text-muted);
+    }
+
+    .badge-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 85%;
+    }
+    .badge-card {
+      background: rgba(14, 27, 39, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: var(--transition-apple);
+    }
+    .badge-card.active-badge {
+      border-color: var(--accent-teal);
+      background: rgba(42, 157, 143, 0.1);
+      box-shadow: 0 4px 12px rgba(42, 157, 143, 0.15);
+    }
+    .badge-icon {
+      font-size: 1.4rem;
+    }
+    .badge-info {
+      flex: 1;
+    }
+    .badge-title-text {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+    .badge-ratio-text {
+      font-size: 0.72rem;
+      color: var(--accent-teal);
+      font-weight: 600;
+    }
+
+    /* ─── Meet Team Bugs2Bucks ─── */
+    .team-section {
+      max-width: 1200px;
+      margin: 120px auto 80px auto;
+      padding: 0 24px;
+    }
+
+    .team-title-wrap {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .team-title-wrap h3 {
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+      color: #FFFFFF;
+    }
+
+    .team-grid-landing {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .member-card-new {
+      background: rgba(14, 27, 39, 0.4);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      transition: var(--transition-apple);
+    }
+
+    .member-card-new:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .member-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      background: #111C24;
+    }
+
+    .member-name {
+      font-size: 1.15rem;
+      font-weight: 750;
+      letter-spacing: -0.02em;
+      color: #FFFFFF;
+    }
+
+    .member-role {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent-teal);
+      margin-top: -8px;
+    }
+
+    .member-skills-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .member-skills-list li {
+      font-size: 0.82rem;
+      color: var(--color-text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ─── Technology Section ─── */
+    .tech-section-new {
+      background: rgba(6, 11, 15, 0.5);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 96px 24px;
+      margin: 120px 0;
+    }
+
+    .tech-container-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .tech-title-block {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 60px auto;
+    }
+
+    .tech-title-block h3 {
+      color: #FFFFFF;
+    }
+
+    .tech-grid-new {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .tech-card-new {
+      background: rgba(14, 27, 39, 0.4);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: var(--transition-apple);
+    }
+
+    .tech-card-new:hover {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .tech-card-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-teal);
+    }
+
+    .tech-items-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tech-badge-new {
+      background: #111C24;
+      color: #ECF0F3;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    /* ─── CTA Banner ─── */
+    .cta-banner-new {
+      max-width: 1200px;
+      margin: 120px auto 80px auto;
+      padding: 0 24px;
+    }
+
+    .cta-inner-box {
+      background: radial-gradient(circle 800px at 50% 120%, rgba(42, 157, 143, 0.2), #060B0F);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 80px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 45px rgba(0, 0, 0, 0.5);
+    }
+
+    .cta-inner-box h3 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin-bottom: 16px;
+      color: #FFFFFF;
+    }
+
+    .cta-inner-box p {
+      font-size: 1.05rem;
+      color: var(--color-text-secondary);
+      max-width: 580px;
+      margin: 0 auto 36px auto;
+      line-height: 1.6;
+    }
+
+    /* ─── Footer ─── */
+    .footer-new {
+      border-top: 1px solid var(--border);
+      padding: 48px 24px;
+      text-align: center;
+      background: var(--color-bg);
+    }
+
+    .footer-logo {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+      color: #FFFFFF;
+    }
+
+    .footer-logo span {
+      background: var(--gradient-teal);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .footer-subtitle {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: 20px;
+    }
+
+    .footer-tag-wrap {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .footer-tag {
+      background: #111C24;
+      color: var(--color-text-secondary);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .footer-copy {
+      font-size: 0.72rem;
+      color: var(--color-text-muted);
+      opacity: 0.75;
+    }
+
+    /* Animations */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes scanVertical {
+      0% { top: 0%; opacity: 0; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.8; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    @media (max-width: 968px) {
+      .hero-container {
+        grid-template-columns: 1fr;
+        padding-top: 120px;
+        text-align: center;
+        gap: 40px;
+      }
+      .hero-left {
+        align-items: center;
+      }
+      .pipeline-row {
+        justify-content: center;
+        gap: 14px;
+      }
+      .pipeline-line {
+        display: none;
+      }
+      .hero-right {
+        height: auto;
+      }
+      .floating-stats-widget {
+        top: -20px;
+        right: 50%;
+        transform: translateX(50%);
+        animation: none;
+      }
+      .bottom-info-row {
+        position: relative;
+        bottom: 0;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 40px;
+      }
+      .mission-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+      }
+      .timeline-nav {
+        position: relative;
+        top: 0;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 12px 0;
+        border-left: none;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.06);
+        gap: 24px;
+        width: 100%;
+      }
+      .timeline-step {
+        flex-shrink: 0;
+      }
+      .timeline-step::before {
+        display: none;
+      }
+      .timeline-cards {
+        gap: 80px;
+      }
+      .tech-grid-new {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .team-grid-landing {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ───── FLOAT HEADER NAV ───── -->
+<header class="header-nav">
+  <a href="{{ url_for('index') }}" class="nav-logo-wrap">
+    <div class="nav-logo-symbol"></div>
+    <div class="nav-logo-text">THERMOS <span>AI</span></div>
+  </a>
+
+  <div class="nav-links">
+    <a href="#features-timeline" class="nav-link-item">Features</a>
+    <a href="#features-timeline" class="nav-link-item">How It Works</a>
+    <a href="#technology" class="nav-link-item">Technology</a>
+    <a href="#team" class="nav-link-item">Team</a>
+  </div>
+
+  <div class="nav-actions">
+    <a href="{{ url_for('dashboard') }}" class="btn-header">Launch Dashboard &rarr;</a>
+    <div class="hamburger-icon" title="Menu">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </div>
+  </div>
+</header>
+
+<!-- ───── HERO WRAPPER ───── -->
+<div class="welcome-hero-wrap">
+  <main class="hero-container">
+    
+    <!-- Left Content (Native code) -->
+    <div class="hero-left">
+      <div class="space-hackathon-badge">
+        🛰️ BHARATIYA ANTARIKSH HACKATHON 2026 &bull; ISRO
+      </div>
+      
+      <h1 class="hero-title">
+        See the <span class="txt-orange">Heat.</span><br>
+        Shape the <span class="txt-teal">Future.</span>
+      </h1>
+      
+      <p class="hero-description">
+        THERMOS AI uses AI and satellite intelligence to detect urban heat hotspots, predict future risks, simulate cooling strategies, and help cities build a cooler tomorrow.
+      </p>
+
+      <!-- Interactive Pipeline Flow Row -->
+      <div class="pipeline-row">
+        <div class="pipeline-line"></div>
+        
+        <a href="{{ url_for('dashboard') }}" class="pipeline-card" title="Detect">
+          <div class="pipeline-circle">🔍</div>
+          <span class="pipeline-label">Detect</span>
+        </a>
+        
+        <a href="{{ url_for('analytics') }}" class="pipeline-card" title="Analyze">
+          <div class="pipeline-circle">📊</div>
+          <span class="pipeline-label">Analyze</span>
+        </a>
+        
+        <a href="{{ url_for('heatmap') }}" class="pipeline-card" title="Predict">
+          <div class="pipeline-circle">📈</div>
+          <span class="pipeline-label">Predict</span>
+        </a>
+        
+        <a href="{{ url_for('simulator') }}" class="pipeline-card" title="Simulate">
+          <div class="pipeline-circle">🗺️</div>
+          <span class="pipeline-label">Simulate</span>
+        </a>
+        
+        <a href="{{ url_for('recommendations') }}" class="pipeline-card" title="Optimize">
+          <div class="pipeline-circle">🎯</div>
+          <span class="pipeline-label">Optimize</span>
+        </a>
+        
+        <a href="{{ url_for('recommendations') }}" class="pipeline-card" title="Mitigate">
+          <div class="pipeline-circle">🌿</div>
+          <span class="pipeline-label">Mitigate</span>
+        </a>
+      </div>
+
+      <!-- CTA buttons -->
+      <div class="hero-ctas">
+        <a href="{{ url_for('dashboard') }}" class="btn-main-orange">Launch Dashboard &rarr;</a>
+        <a href="{{ url_for('simulator') }}" class="btn-main-simulator">
+          <span class="cube-icon"></span>
+          <span>Try Simulator</span>
+        </a>
+      </div>
+    </div>
+    
+    <!-- Right Content (Cropped Graphic visual) -->
+      <!-- Video replacement -->
+      <video src="/static/images/can_u_generate_video_only_base.mp4" class="hero-art-image" autoplay loop muted playsinline style="width: 100%; border-radius: var(--radius-xl); box-shadow: var(--shadow-premium); object-fit: cover; border: 1.5px solid rgba(255, 255, 255, 0.08);"></video>
+      
+      <!-- Floating Current Heat Index overlay -->
+      <div class="floating-stats-widget">
+        <div class="widget-lbl">Current Heat Index</div>
+        <div class="widget-val">42&deg;C</div>
+        <div class="widget-status-row">
+          <span class="widget-status-dot"></span>
+          <span class="widget-status-txt">High Risk</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM METADATA BAR -->
+  <div class="bottom-info-row">
+    <div class="info-pills">
+      <div class="info-pill">
+        <span class="info-pill-dot"></span>
+        <span>AI</span>
+      </div>
+      <div class="info-pill">
+        <span class="info-pill-dot"></span>
+        <span>Satellite</span>
+      </div>
+      <div class="info-pill">
+        <span class="info-pill-dot"></span>
+        <span>Sustainability</span>
+      </div>
+    </div>
+
+    <div class="live-feed-panel">
+      <span class="live-feed-beacon"></span>
+      <span>Live Satellite Feed</span>
+    </div>
+  </div>
+</div>
+
+<!-- ───── MISSION TIMELINE STORY ───── -->
+<section class="mission-section" id="features-timeline">
+  <div class="mission-header">
+    <h2>The Mission Story</h2>
+    <p>Follow the operational workflow from space-based observations to ground-level micro-climate optimization.</p>
+  </div>
+
+  <div class="mission-grid">
+    <!-- Left Sticky Menu -->
+    <div class="timeline-nav">
+      <a href="#step-satellite" class="timeline-step active" id="trigger-sat">
+        <span class="step-number">Step 01</span>
+        <span class="step-name">Satellite Ingestion</span>
+        <span class="step-short-desc">Collect Earth Observation telemetry</span>
+      </a>
+      <a href="#step-detection" class="timeline-step" id="trigger-det">
+        <span class="step-number">Step 02</span>
+        <span class="step-name">Heat Detection</span>
+        <span class="step-short-desc">AI processes imagery for surface temp</span>
+      </a>
+      <a href="#step-analysis" class="timeline-step" id="trigger-ana">
+        <span class="step-number">Step 03</span>
+        <span class="step-name">Driver Analysis</span>
+        <span class="step-short-desc">Assess vegetation cover & built density</span>
+      </a>
+      <a href="#step-prediction" class="timeline-step" id="trigger-pred">
+        <span class="step-number">Step 04</span>
+        <span class="step-name">Heat Prediction</span>
+        <span class="step-short-desc">Forecast thermal risks using deep models</span>
+      </a>
+      <a href="#step-simulation" class="timeline-step" id="trigger-sim">
+        <span class="step-number">Step 05</span>
+        <span class="step-name">Intervention Simulation</span>
+        <span class="step-short-desc">Simulate trees, cool roofs & waterways</span>
+      </a>
+      <a href="#step-recommendations" class="timeline-step" id="trigger-rec">
+        <span class="step-number">Step 06</span>
+        <span class="step-name">Recommending Solutions</span>
+        <span class="step-short-desc">Generate prioritized mitigation portfolios</span>
+      </a>
+    </div>
+
+    <!-- Right Large Cards -->
+    <div class="timeline-cards">
+      
+      <!-- Card 1: Satellite -->
+      <div class="visual-card-wrapper" id="step-satellite">
+        <div class="premium-card">
+          <div class="card-top">
+            <span class="step-number">Satellite</span>
+            <h3 class="card-title">Multi-Source Satellite Telemetry</h3>
+            <p class="card-desc">We ingest high-resolution raw imagery from Landsat 8 (Thermal Infrared Sensors), Sentinel-2 (Multispectral Instruments), and ECOSTRESS spaceborne radiometers to continuously monitor Bengaluru's surface heat emissions.</p>
+          </div>
+          <div class="card-graphic">
+            <div class="satellite-orbit">
+              <div class="orbiting-sat">🛰️</div>
+              <div class="earth-globe"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Detection -->
+      <div class="visual-card-wrapper" id="step-detection">
+        <div class="premium-card">
+          <div class="card-top">
+            <span class="step-number">Detection</span>
+            <h3 class="card-title">AI-Powered Hotspot Recognition</h3>
+            <p class="card-desc">Geospatial convolutional neural networks parse the thermal bands to highlight Urban Heat Island (UHI) zones. Bengaluru's hotspots are automatically isolated and cataloged by severity.</p>
+          </div>
+          <div class="card-graphic" id="detectionGraphic">
+            <div class="grid-scanner-line"></div>
+            <div class="thermal-grid">
+              <!-- Grid cells filled by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Analysis -->
+      <div class="visual-card-wrapper" id="step-analysis">
+        <div class="premium-card">
+          <div class="card-top">
+            <span class="step-number">Analysis</span>
+            <h3 class="card-title">Explainable Drivers & NDVI</h3>
+            <p class="card-desc">SHAP values map exact local factors contributing to heat retention. We correlate land cover (NDVI vegetation index), building materials, albedo levels, and wind corridors to understand *why* a hotspot exists.</p>
+          </div>
+          <div class="card-graphic" id="factorGraphic">
+            <div class="factor-container">
+              <div class="factor-row">
+                <div class="factor-label-row">
+                  <span>Barren/Built-up Density</span>
+                  <span>78%</span>
+                </div>
+                <div class="factor-bar-bg">
+                  <div class="factor-bar-fill" style="background: var(--accent-orange); width: 78%;"></div>
+                </div>
+              </div>
+              <div class="factor-row">
+                <div class="factor-label-row">
+                  <span>Vegetation Shortage (NDVI)</span>
+                  <span>18%</span>
+                </div>
+                <div class="factor-bar-bg">
+                  <div class="factor-bar-fill" style="background: var(--accent-teal); width: 82%;"></div>
+                </div>
+              </div>
+              <div class="factor-row">
+                <div class="factor-label-row">
+                  <span>Low-Albedo Material</span>
+                  <span>46%</span>
+                </div>
+                <div class="factor-bar-bg">
+                  <div class="factor-bar-fill" style="background: #F4A261; width: 46%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Prediction -->
+      <div class="visual-card-wrapper" id="step-prediction">
+        <div class="premium-card">
+          <div class="card-top">
+            <span class="step-number">Prediction</span>
+            <h3 class="card-title">LSTM Temporal Heat Forecasting</h3>
+            <p class="card-desc">Using weather forecasting models (ERA5) combined with long short-term memory (LSTM) networks, THERMOS AI predicts future risk expansion zones over the next 12 to 24 months, indicating critical escalation points.</p>
+          </div>
+          <div class="card-graphic">
+            <div class="prediction-chart-mockup" id="predChartGrid">
+              <!-- Bars populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5: Simulation -->
+      <div class="visual-card-wrapper" id="step-simulation">
+        <div class="premium-card">
+          <div class="card-top">
+            <span class="step-number">Simulation</span>
+            <h3 class="card-title">Urban Interventions Sandbox</h3>
+            <p class="card-desc">Try applying cool roofs, green corridors, water bodies, or tree plantation schemes. Slide to see how adding green structures visually lowers city temperature metrics.</p>
+          </div>
+          <div class="card-graphic">
+            <div class="sim-slider-box">
+              <div style="font-size:0.75rem;font-weight:700;display:flex;justify-content:space-between;color:#94A3B8;">
+                <span>🌳 Tree Plantation Level</span>
+                <span id="sliderValDisplay">0%</span>
+              </div>
+              <input type="range" class="sim-slider-input" id="timelineSimSlider" min="0" max="100" value="0">
+              <div class="sim-stats-grid">
+                <div class="sim-stat-box">
+                  <div class="sim-stat-val" id="timelineSimTemp">42.6°C</div>
+                  <div class="sim-stat-lbl">Simulated Temp</div>
+                </div>
+                <div class="sim-stat-box">
+                  <div class="sim-stat-val" id="timelineSimRed" style="color:var(--accent-green);">-0.0°C</div>
+                  <div class="sim-stat-lbl">Temperature Drop</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6: Recommendations -->
+      <div class="visual-card-wrapper" id="step-recommendations">
+        <div class="premium-card">
+          <div class="card-top">
+            <span class="step-number">Recommendations</span>
+            <h3 class="card-title">Optimized Cost-Benefit Ranking</h3>
+            <p class="card-desc">A Pareto-optimal search outputs the highest thermal impact portfolios tailored for municipalities. Compare ROI, cooling coefficients, energy savings, and implementation costs.</p>
+          </div>
+          <div class="card-graphic">
+            <div class="badge-stack">
+              <div class="badge-card active-badge">
+                <span class="badge-icon">🏙️</span>
+                <div class="badge-info">
+                  <div class="badge-title-text">Hybrid Green + Cool Roof</div>
+                  <div class="badge-ratio-text">⭐ Recommended · 4.1x ROI</div>
+                </div>
+              </div>
+              <div class="badge-card">
+                <span class="badge-icon">🌳</span>
+                <div class="badge-info">
+                  <div class="badge-title-text">Targeted Canopy Expansion</div>
+                  <div class="badge-ratio-text" style="color:var(--color-text-muted);">3.2x ROI</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ───── TECHNOLOGY SECTION ───── -->
+<section class="tech-section-new" id="technology">
+  <div class="tech-container-inner">
+    <div class="tech-title-block">
+      <div class="space-hackathon-badge" style="margin-bottom: 12px;">🔬 Tech Stack</div>
+      <h3 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em;">Scientific Foundations</h3>
+      <p style="color: var(--color-text-muted); font-size: 0.95rem; margin-top: 8px;">Multi-source satellite intelligence built on standard scientific algorithms.</p>
+    </div>
+
+    <div class="tech-grid-new">
+      <div class="tech-card-new">
+        <div class="tech-card-label">🛰️ Earth Observation</div>
+        <div class="tech-items-stack">
+          <span class="tech-badge-new">Landsat 8</span>
+          <span class="tech-badge-new">Sentinel-2</span>
+          <span class="tech-badge-new">ECOSTRESS</span>
+          <span class="tech-badge-new">ERA5</span>
+        </div>
+      </div>
+      
+      <div class="tech-card-new">
+        <div class="tech-card-label">🧠 AI Engine</div>
+        <div class="tech-items-stack">
+          <span class="tech-badge-new">PyTorch</span>
+          <span class="tech-badge-new">XGBoost</span>
+          <span class="tech-badge-new">SHAP XAI</span>
+          <span class="tech-badge-new">LSTM Networks</span>
+        </div>
+      </div>
+
+      <div class="tech-card-new">
+        <div class="tech-card-label">🗺️ Geospatial</div>
+        <div class="tech-items-stack">
+          <span class="tech-badge-new">Earth Engine</span>
+          <span class="tech-badge-new">GeoPandas</span>
+          <span class="tech-badge-new">PostGIS</span>
+          <span class="tech-badge-new">PyQGIS</span>
+        </div>
+      </div>
+
+      <div class="tech-card-new">
+        <div class="tech-card-label">⚖️ Optimization</div>
+        <div class="tech-items-stack">
+          <span class="tech-badge-new">Pareto Search</span>
+          <span class="tech-badge-new">i-Tree Models</span>
+          <span class="tech-badge-new">Albedo Simulator</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── TEAM SECTION ───── -->
+<section class="team-section" id="team">
+  <div class="team-title-wrap">
+    <div class="space-hackathon-badge" style="margin-bottom:12px;">👥 Developers</div>
+    <h3>Team Bugs2Bucks</h3>
+    <p style="color:var(--color-text-muted); font-size: 0.95rem; max-width: 500px; margin: 8px auto 0 auto;">Dayananda Sagar University, Bengaluru. Creating smart tools for space-driven urban planning.</p>
+  </div>
+
+  <div class="team-grid-landing">
+    <div class="member-card-new">
+      <div class="member-icon">👑</div>
+      <div>
+        <div class="member-name">Karan A Sharma</div>
+        <div class="member-role">Team Lead &amp; Architect</div>
+      </div>
+      <ul class="member-skills-list">
+        <li>Product Roadmaps</li>
+        <li>Full-Stack Development</li>
+        <li>AI Models integration</li>
+      </ul>
+    </div>
+
+    <div class="member-card-new">
+      <div class="member-icon">⚡</div>
+      <div>
+        <div class="member-name">Pratik K Koradur</div>
+        <div class="member-role">Remote Sensing &amp; ML</div>
+      </div>
+      <ul class="member-skills-list">
+        <li>Satellite Imagery Fusion</li>
+        <li>Neural Heat Detection</li>
+        <li>Temporal Forecasting</li>
+      </ul>
+    </div>
+
+    <div class="member-card-new">
+      <div class="member-icon">🎨</div>
+      <div>
+        <div class="member-name">Kumar Satyam</div>
+        <div class="member-role">Frontend &amp; UX</div>
+      </div>
+      <ul class="member-skills-list">
+        <li>Data Visualizations</li>
+        <li>Interactive Simulators</li>
+        <li>Premium CSS Architectures</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ───── CTA BANNER ───── -->
+<section class="cta-banner-new">
+  <div class="cta-inner-box">
+    <h3>Launch Mission Control</h3>
+    <p>Explore the full dashboard, analyze temperature distribution across Bengaluru, and execute cooling simulation plans.</p>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-main-orange" style="padding: 16px 48px; font-size:1.05rem;">Launch Interactive Dashboard &rarr;</a>
+  </div>
+</section>
+
+<!-- ───── FOOTER ───── -->
+<footer class="footer-new">
+  <div class="footer-logo">THERMOS <span>AI</span></div>
+  <div class="footer-subtitle">Space Intelligence &amp; Urban Heat Mitigation Platform</div>
+  <div class="footer-tag-wrap">
+    <span class="footer-tag">🛰️ ISRO Powered</span>
+    <span class="footer-tag">🧠 AI/ML Core</span>
+    <span class="footer-tag">🏫 DSU Bengaluru</span>
+    <span class="footer-tag">🏆 Bugs2Bucks</span>
+  </div>
+  <div class="footer-copy">&copy; 2026 THERMOS AI. Developed for Bharatiya Antariksh Hackathon 2026.</div>
+</footer>
+
+<script>
+  // ── Floating Nav scroll background transition ──
+  const navBar = document.querySelector('.header-nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 40) {
+      navBar.style.background = 'rgba(6, 11, 15, 0.9)';
+      navBar.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+    } else {
+      navBar.style.background = 'rgba(6, 11, 15, 0.65)';
+      navBar.style.borderColor = 'var(--border)';
+    }
+  });
+
+  // ── Interactive Timeline Scroll tracking ──
+  const timelineTriggers = document.querySelectorAll('.visual-card-wrapper');
+  const stepLinks = {
+    'step-satellite': document.getElementById('trigger-sat'),
+    'step-detection': document.getElementById('trigger-det'),
+    'step-analysis': document.getElementById('trigger-ana'),
+    'step-prediction': document.getElementById('trigger-pred'),
+    'step-simulation': document.getElementById('trigger-sim'),
+    'step-recommendations': document.getElementById('trigger-rec')
+  };
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '-20% 0px -40% 0px',
+    threshold: 0.15
+  };
+
+  // Glow coordinates tracker following scroll
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const viewportOffset = window.innerHeight * 0.35;
+    document.body.style.setProperty('--glow-y', (scrollY + viewportOffset) + 'px');
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        
+        // Remove active class from all
+        Object.values(stepLinks).forEach(link => {
+          if (link) link.classList.remove('active');
+        });
+        
+        // Add active class to current
+        if (stepLinks[id]) {
+          stepLinks[id].classList.add('active');
+        }
+
+        // Change background glow color based on current section (scrollytelling)
+        let glowColor = 'rgba(46, 226, 230, 0.08)'; // Default Cyan
+        if (id === 'step-satellite') {
+          glowColor = 'rgba(46, 226, 230, 0.08)'; // Cyan
+        } else if (id === 'step-detection') {
+          glowColor = 'rgba(233, 67, 53, 0.08)'; // Red
+        } else if (id === 'step-analysis') {
+          glowColor = 'rgba(255, 107, 61, 0.08)'; // Orange
+        } else if (id === 'step-prediction') {
+          glowColor = 'rgba(122, 123, 255, 0.08)'; // Purple
+        } else if (id === 'step-simulation') {
+          glowColor = 'rgba(46, 212, 122, 0.08)'; // Green
+        } else if (id === 'step-recommendations') {
+          glowColor = 'rgba(255, 176, 32, 0.08)'; // Gold/Yellow
+        }
+        document.body.style.setProperty('--current-glow-color', glowColor);
+
+        // Trigger individual card micro-animations
+        if (id === 'step-detection') {
+          triggerDetectionGrid();
+        } else if (id === 'step-analysis') {
+          triggerFactorBars();
+        } else if (id === 'step-prediction') {
+          triggerPredictionChart();
+        }
+      }
+    });
+  }, observerOptions);
+
+  timelineTriggers.forEach(trigger => observer.observe(trigger));
+
+  // Timeline Navigation Clicks smoothly scrolling to focus target
+  Object.keys(stepLinks).forEach(id => {
+    const link = stepLinks[id];
+    if (link) {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.getElementById(id);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      });
+    }
+  });
+
+  // ── Timeline visual 2: Thermal Grid Simulation ──
+  function triggerDetectionGrid() {
+    const container = document.querySelector('.thermal-grid');
+    if (!container || container.dataset.rendered === 'true') return;
+    container.dataset.rendered = 'true';
+    
+    container.innerHTML = '';
+    for (let i = 0; i < 48; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('grid-cell');
+      container.appendChild(cell);
+      
+      // Delay-based heat visualization popups
+      setTimeout(() => {
+        const rng = Math.random();
+        if (rng > 0.8) {
+          cell.classList.add('very-hot');
+        } else if (rng > 0.5) {
+          cell.classList.add('hot');
+        }
+      }, Math.random() * 1200 + 400);
+    }
+  }
+
+  // ── Timeline visual 3: Factor Bars animation ──
+  function triggerFactorBars() {
+    const fills = document.querySelectorAll('#factorGraphic .factor-bar-fill');
+    fills.forEach(bar => {
+      const width = bar.style.width;
+      bar.style.width = '0%';
+      setTimeout(() => {
+        bar.style.width = width;
+      }, 100);
+    });
+  }
+
+  // ── Timeline visual 4: AI Prediction Animation ──
+  let predictionTriggered = false;
+  function triggerPredictionChart() {
+    const chart = document.getElementById('predChartGrid');
+    if (!chart || predictionTriggered) return;
+    predictionTriggered = true;
+    
+    chart.innerHTML = '';
+    const pointsCount = 18;
+    for (let i = 0; i < pointsCount; i++) {
+      const bar = document.createElement('div');
+      bar.classList.add('chart-bar');
+      if (i > 10) {
+        bar.classList.add('predicted');
+      }
+      chart.appendChild(bar);
+      
+      // Exponentially increasing simulated height
+      let hVal = 20 + Math.pow(i, 1.45) * 1.8;
+      if (i > 10) {
+        hVal += Math.sin(i) * 5; // predictions variance
+      }
+      
+      setTimeout(() => {
+        bar.style.height = `${Math.min(hVal, 100)}%`;
+      }, i * 60);
+    }
+  }
+
+  // ── Timeline visual 5: Interactive Simulator Sandbox ──
+  const simSlider = document.getElementById('timelineSimSlider');
+  const simTemp = document.getElementById('timelineSimTemp');
+  const simRed = document.getElementById('timelineSimRed');
+  const sliderVal = document.getElementById('sliderValDisplay');
+
+  if (simSlider) {
+    simSlider.addEventListener('input', () => {
+      const v = parseInt(simSlider.value);
+      sliderVal.textContent = v + '%';
+
+      const tempVal = 42.6 - (v * 0.065);
+      const reduction = v * 0.065;
+
+      simTemp.textContent = tempVal.toFixed(1) + '°C';
+      simRed.textContent = `-${reduction.toFixed(1)}°C`;
+      
+      if (v > 0) {
+        simRed.style.color = 'var(--accent-green)';
+        simTemp.style.color = tempVal < 39 ? 'var(--accent-teal)' : '#FFFFFF';
+      } else {
+        simRed.style.color = 'var(--color-text-muted)';
+        simTemp.style.color = '#FFFFFF';
+      }
+    });
+  }
+</script>
+</body>
+</html>

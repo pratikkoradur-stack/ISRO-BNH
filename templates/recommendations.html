@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Recommendations{% endblock %}
+{% block page_title %}Recommendations & Impact Dashboard{% endblock %}
+{% block page_subtitle %}AI-powered optimal cooling strategies for Bengaluru{% endblock %}
+
+{% block content %}
+
+<!-- Top Impact Overview -->
+<div class="stats-grid" style="grid-template-columns:repeat(5,1fr);">
+  <div class="stat-card">
+    <span class="stat-icon">❄️</span>
+    <div class="stat-label">Best Temp Reduction</div>
+    <div class="stat-value teal">-6.5<span class="stat-unit">°C</span></div>
+    <div class="stat-sub">Hybrid Green + Cool Roof</div>
+  </div>
+  <div class="stat-card green">
+    <span class="stat-icon">⚡</span>
+    <div class="stat-label">Energy Savings</div>
+    <div class="stat-value" style="color:var(--accent-green);">18.7<span class="stat-unit">%</span></div>
+    <div class="stat-sub">Annual savings potential</div>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">👥</span>
+    <div class="stat-label">Population Protected</div>
+    <div class="stat-value heat">1.9<span class="stat-unit">M</span></div>
+    <div class="stat-sub">People benefiting</div>
+  </div>
+  <div class="stat-card gold">
+    <span class="stat-icon">⚖️</span>
+    <div class="stat-label">Cost vs Benefit</div>
+    <div class="stat-value gold">3.2<span class="stat-unit">x</span></div>
+    <div class="stat-sub">Benefit-to-cost ratio</div>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">💰</span>
+    <div class="stat-label">Implementation Cost</div>
+    <div class="stat-value">₹48<span class="stat-unit">Cr</span></div>
+    <div class="stat-sub">Estimated MVP cost</div>
+  </div>
+</div>
+
+<div class="content-grid" style="margin-top:0;">
+
+  <!-- Strategy Cards -->
+  <div class="col-5">
+    <div class="card card-body">
+      <h3 style="font-size:1rem;margin-bottom:4px;">🏆 Cooling Strategies</h3>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;">Ranked by effectiveness — click to explore</p>
+
+      <div id="strategyList" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
+  </div>
+
+  <!-- Detail + Chart -->
+  <div class="col-7">
+    <!-- Estimated Temp Reduction Chart -->
+    <div class="card card-body" style="margin-bottom:20px;">
+      <h3 style="font-size:1rem;margin-bottom:4px;">📉 Estimated Temperature Reduction</h3>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;">Projected monthly temperature with selected strategy applied</p>
+      <div class="chart-container" style="height:200px;">
+        <canvas id="recChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Strategy Comparison Table -->
+    <div class="card card-body">
+      <h3 style="font-size:1rem;margin-bottom:16px;">📊 Strategy Comparison</h3>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Strategy</th>
+              <th>Temp Reduction</th>
+              <th>Energy Savings</th>
+              <th>Cost</th>
+              <th>Benefit Ratio</th>
+            </tr>
+          </thead>
+          <tbody id="strategyTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Impact Overview Full Width -->
+  <div class="col-12">
+    <div class="card card-body">
+      <h3 style="font-size:1rem;margin-bottom:16px;">🌍 Impact Overview — Hybrid Green + Cool Roof Strategy</h3>
+      <div class="impact-grid">
+        <div class="impact-item">
+          <div class="impact-value" style="color:var(--accent-heat);">-47%</div>
+          <div class="impact-label">🌡️ Heat Stress Cases Reduced</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-value" style="color:var(--accent-purple);">-12%</div>
+          <div class="impact-label">💧 Water Demand Reduced</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-value" style="color:var(--accent-green);">+22%</div>
+          <div class="impact-label">🌬️ Air Quality Improved</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-value" style="color:var(--accent-teal);">-15K</div>
+          <div class="impact-label">🌿 tCO₂/yr Carbon Reduction</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-value" style="color:var(--accent-warning);">32 km²</div>
+          <div class="impact-label">📐 Area Improved</div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-value" style="color:var(--accent-teal);">1.9M</div>
+          <div class="impact-label">👥 Population Protected</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/recommendations.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Urban Heat Intelligence Overview{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* Hide the default topbar on dashboard — hero section replaces it */
+  .topbar { display: none !important; }
+  .main-content { padding-top: 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ═══════ HERO SECTION ═══════ -->
+<section class="dash-hero">
+  <div class="dash-hero-img" style="background-image: url('{{ url_for('static', filename='images/hero_visual_dark.png') }}');"></div>
+  <div class="dash-hero-overlay"></div>
+  <div class="dash-hero-content">
+    <div class="dash-hero-badge">
+      🛰️ Bharatiya Antariksh Hackathon 2026 &bull; ISRO
+    </div>
+    <h1>
+      Welcome back,<br>
+      Let's make cities <span class="text-orange">cooler</span>
+      with intelligence from <span class="text-cyan">space.</span>
+    </h1>
+    <p class="dash-hero-subtitle">
+      Satellite + Simulation = Smarter Decisions. Monitoring <span id="dashZoneCount">42</span> active urban zones in real-time.
+    </p>
+    <div class="dash-hero-stats">
+      <div class="dash-hero-stat">
+        <span class="dash-hero-stat-label">Current Heat Index</span>
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <span class="dash-hero-stat-value orange" id="heroHeatIndex">--°C</span>
+          <span class="dash-hero-stat-tag danger" id="heroRiskTag">
+            <span style="width:5px;height:5px;border-radius:50%;background:currentColor;"></span>
+            <span id="heroRiskLabel">Analyzing</span>
+          </span>
+        </div>
+      </div>
+      <div class="dash-hero-stat">
+        <span class="dash-hero-stat-label">Active Satellites</span>
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <span class="dash-hero-stat-value cyan">08</span>
+          <span class="dash-hero-stat-tag live">
+            <span style="width:5px;height:5px;border-radius:50%;background:currentColor;animation:pulse-green 1.5s infinite;"></span>
+            Live Feed
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="dash-hero-meta">
+    <span class="dash-hero-date" id="heroDate"></span>
+    <span class="dash-hero-location">
+      📍 <span id="heroCity">Bengaluru, India</span>
+    </span>
+  </div>
+</section>
+
+<!-- ═══════ BENTO GRID: How It Works + Quick Actions ═══════ -->
+<div class="dash-bento">
+  <!-- How It Works -->
+  <div class="dash-card">
+    <div class="dash-card-header">
+      <div class="dash-card-icon orange">📊</div>
+      <div>
+        <h3 style="margin-bottom:2px;">How It Works</h3>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin:0;">Your journey from data to action in 5 simple steps</p>
+      </div>
+    </div>
+    <div class="dash-process-flow">
+      <div class="dash-step">
+        <div class="dash-step-icon" style="color:var(--accent-orange);">🔍</div>
+        <div>
+          <div class="dash-step-label">1. Detect</div>
+          <div class="dash-step-desc">Locate urban heat hotspots</div>
+        </div>
+      </div>
+      <div class="dash-step">
+        <div class="dash-step-icon" style="color:var(--accent-cyan);">📈</div>
+        <div>
+          <div class="dash-step-label">2. Analyze</div>
+          <div class="dash-step-desc">Understand key heat drivers</div>
+        </div>
+      </div>
+      <div class="dash-step">
+        <div class="dash-step-icon" style="color:var(--accent-purple);">📉</div>
+        <div>
+          <div class="dash-step-label">3. Predict</div>
+          <div class="dash-step-desc">Forecast future heat risks</div>
+        </div>
+      </div>
+      <div class="dash-step">
+        <div class="dash-step-icon" style="color:var(--accent-warning);">⚙️</div>
+        <div>
+          <div class="dash-step-label">4. Simulate</div>
+          <div class="dash-step-desc">Test cooling interventions</div>
+        </div>
+      </div>
+      <div class="dash-step">
+        <div class="dash-step-icon" style="color:var(--accent-green);">✅</div>
+        <div>
+          <div class="dash-step-label">5. Optimize</div>
+          <div class="dash-step-desc">AI-powered recommendations</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="dash-card">
+    <h3 style="margin-bottom:20px;">Quick Actions</h3>
+    <div class="dash-quick-actions">
+      <a href="{{ url_for('heatmap') }}" class="dash-action-btn">
+        <div class="action-left">
+          <span class="action-icon">🗺️</span>
+          <span>Explore Heat Map</span>
+        </div>
+        <span class="action-arrow">→</span>
+      </a>
+      <a href="{{ url_for('simulator') }}" class="dash-action-btn">
+        <div class="action-left">
+          <span class="action-icon">▶️</span>
+          <span>Run Simulator</span>
+        </div>
+        <span class="action-arrow">→</span>
+      </a>
+      <a href="{{ url_for('recommendations') }}" class="dash-action-btn">
+        <div class="action-left">
+          <span class="action-icon">🌿</span>
+          <span>View Recommendations</span>
+        </div>
+        <span class="action-arrow">→</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ DASHBOARD WIDGETS ═══════ -->
+<div class="dash-widgets">
+
+  <!-- Heat Overview -->
+  <div class="dash-card">
+    <div class="dash-card-header">
+      <div class="dash-card-icon orange">🌡️</div>
+      <h3 style="margin-bottom:0;">Heat Overview</h3>
+    </div>
+    <div class="dash-gauge-wrap">
+      <div style="position:relative;width:180px;height:180px;display:flex;align-items:center;justify-content:center;">
+        <svg class="dash-gauge-svg" viewBox="0 0 224 224" style="transform:rotate(-90deg);">
+          <circle cx="112" cy="112" r="92" fill="transparent" stroke="rgba(255,255,255,0.04)" stroke-width="14"/>
+          <circle id="gaugeCircle" cx="112" cy="112" r="92" fill="transparent" stroke="var(--accent-orange)" stroke-width="14" stroke-dasharray="578" stroke-dashoffset="173" stroke-linecap="round" style="filter:drop-shadow(0 0 10px rgba(255,107,61,0.4));transition:stroke-dashoffset 1s ease;"/>
+        </svg>
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+          <span class="dash-gauge-value" id="gaugeTemp">--°C</span>
+          <span class="dash-gauge-label">Avg Land Temp</span>
+        </div>
+      </div>
+      <div class="dash-gauge-stats">
+        <div class="dash-gauge-stat">
+          <span class="dash-gauge-stat-icon">🌿</span>
+          <div>
+            <div class="dash-gauge-stat-val" id="gaugeVeg">--%</div>
+            <div class="dash-gauge-stat-lbl">Vegetation</div>
+          </div>
+        </div>
+        <div class="dash-gauge-stat">
+          <span class="dash-gauge-stat-icon">🏙️</span>
+          <div>
+            <div class="dash-gauge-stat-val" id="gaugeDensity">--%</div>
+            <div class="dash-gauge-stat-lbl">Density</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Temperature Trend -->
+  <div class="dash-card">
+    <div class="dash-card-header">
+      <div class="dash-card-icon cyan">📈</div>
+      <h3 style="margin-bottom:0;">Temperature Trend</h3>
+    </div>
+    <div id="trendBarsContainer" class="dash-bars">
+      <!-- Bars populated by JS -->
+    </div>
+    <div id="trendLabelsContainer" class="dash-bar-labels">
+      <!-- Labels populated by JS -->
+    </div>
+    <a href="{{ url_for('analytics') }}" class="dash-view-btn">
+      View Full Analytics <span>→</span>
+    </a>
+  </div>
+
+  <!-- Risk Prediction -->
+  <div class="dash-card" style="background:linear-gradient(to bottom right, var(--bg-card), rgba(255,107,61,0.03));">
+    <div class="dash-card-header">
+      <div class="dash-card-icon red">⚠️</div>
+      <h3 style="margin-bottom:0;">Risk Prediction</h3>
+    </div>
+    <div class="dash-risk-box">
+      <div class="dash-risk-header">
+        <span class="dash-risk-label">Heat Risk Score</span>
+        <span class="dash-risk-value" id="riskScore">72%</span>
+      </div>
+      <div class="dash-risk-bar">
+        <div class="dash-risk-fill" id="riskFill" style="width:72%;"></div>
+      </div>
+    </div>
+    <p class="dash-risk-text" id="riskText">
+      Heat risk increasing due to high urbanization and low vegetation coverage in the North-East quadrant. Forecast indicates a 2.5°C rise by 2027.
+    </p>
+    <a href="{{ url_for('recommendations') }}" class="dash-cta-btn">
+      See Full Prediction <span>↗</span>
+    </a>
+  </div>
+
+</div>
+
+<!-- ═══════ FOOTER QUOTE ═══════ -->
+<div class="dash-footer-quote">
+  <p class="dash-footer-quote-text">
+    "Harnessing space technology and AI to transform our cities into sustainable, climate-resilient habitats."
+  </p>
+  <div class="dash-footer-partners">
+    <span class="dash-footer-partners-label">Powered By</span>
+    <div class="dash-footer-logos">
+      <span>ISRO</span>
+      <div class="sep"></div>
+      <span>BBMP</span>
+      <div class="sep"></div>
+      <span>IISC</span>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ════════════════════════════════════════════════
+//   THERMOS AI — Dashboard Data Binding
+// ════════════════════════════════════════════════
+
+const city = window.THERMOS?.getCity() || 'Bengaluru, India';
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // Set date
+  const now = new Date();
+  const heroDate = document.getElementById('heroDate');
+  if (heroDate) {
+    heroDate.textContent = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  // Set city
+  const heroCity = document.getElementById('heroCity');
+  if (heroCity) heroCity.textContent = city;
+
+  // Fetch dashboard data
+  let data = null;
+  try {
+    const res = await fetch(`/api/dashboard-data?city=${encodeURIComponent(city)}`);
+    data = await res.json();
+  } catch(e) {
+    console.warn('Dashboard API error:', e);
+  }
+
+  if (data) {
+    populateDashboard(data);
+  } else {
+    // Fallback defaults
+    populateDashboard({
+      overview: { avg_land_temp: 42.6 },
+      hotspot_alerts: [{ vegetation: 18, built_up: 78 }],
+      trend_data: [38.2, 39.5, 40.1, 41.3, 42.6, 43.8, 44.5, 45.2, 46.1, 45.8, 44.9, 44.2],
+      trend_labels: ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+    });
+  }
+});
+
+function populateDashboard(data) {
+  const ov = data.overview || {};
+  const avgTemp = ov.avg_land_temp || ov.current_air_temp || 42.6;
+
+  // Hero Heat Index
+  const heroHeat = document.getElementById('heroHeatIndex');
+  if (heroHeat) heroHeat.textContent = avgTemp + '°C';
+
+  // Hero risk tag
+  const riskLabel = document.getElementById('heroRiskLabel');
+  if (riskLabel) {
+    if (avgTemp >= 45) riskLabel.textContent = 'Critical';
+    else if (avgTemp >= 40) riskLabel.textContent = 'High Risk';
+    else if (avgTemp >= 35) riskLabel.textContent = 'Moderate';
+    else riskLabel.textContent = 'Low Risk';
+  }
+
+  // Zone count
+  const zoneCount = document.getElementById('dashZoneCount');
+  if (zoneCount && data.hotspot_alerts) {
+    zoneCount.textContent = data.hotspot_alerts.length;
+  }
+
+  // Gauge Temperature
+  const gaugeTemp = document.getElementById('gaugeTemp');
+  if (gaugeTemp) gaugeTemp.textContent = avgTemp + '°C';
+
+  // Gauge circle offset (0 = full, 578 = empty)
+  const gaugeCircle = document.getElementById('gaugeCircle');
+  if (gaugeCircle) {
+    // Map temp 30-55°C to 578-0 offset
+    const pct = Math.min(1, Math.max(0, (avgTemp - 30) / 25));
+    const offset = 578 - (pct * 578);
+    gaugeCircle.setAttribute('stroke-dashoffset', offset.toFixed(0));
+  }
+
+  // Vegetation & density from first zone
+  const firstZone = (data.hotspot_alerts || [])[0];
+  if (firstZone) {
+    const gaugeVeg = document.getElementById('gaugeVeg');
+    const gaugeDensity = document.getElementById('gaugeDensity');
+    if (gaugeVeg) gaugeVeg.textContent = (firstZone.vegetation || 18) + '%';
+    if (gaugeDensity) gaugeDensity.textContent = (firstZone.built_up || 78) + '%';
+  }
+
+  // Temperature Trend Bars
+  const trendData = data.trend_data || [];
+  const trendLabels = data.trend_labels || [];
+  buildTrendBars(trendData, trendLabels, avgTemp);
+
+  // Risk score based on temperature
+  const riskPct = Math.min(95, Math.max(20, Math.round((avgTemp - 30) * 4)));
+  const riskScore = document.getElementById('riskScore');
+  const riskFill = document.getElementById('riskFill');
+  if (riskScore) riskScore.textContent = riskPct + '%';
+  if (riskFill) riskFill.style.width = riskPct + '%';
+
+  // Risk text
+  const riskText = document.getElementById('riskText');
+  if (riskText && avgTemp >= 40) {
+    riskText.textContent = `Heat risk increasing due to high urbanization and low vegetation coverage. Current LST of ${avgTemp}°C indicates significant urban heat island effect. Forecast indicates continued thermal stress.`;
+  }
+}
+
+function buildTrendBars(data, labels, currentTemp) {
+  const container = document.getElementById('trendBarsContainer');
+  const labelsContainer = document.getElementById('trendLabelsContainer');
+  if (!container || !data.length) return;
+
+  const maxVal = Math.max(...data);
+  const minVal = Math.min(...data);
+  const range = maxVal - minVal || 1;
+
+  // Find index closest to current month or highest temp
+  const currentMonth = new Date().getMonth();
+  const activeIdx = data.length > currentMonth ? currentMonth : data.indexOf(Math.max(...data));
+
+  container.innerHTML = data.map((val, i) => {
+    const heightPct = 20 + ((val - minVal) / range) * 70; // 20%-90% range
+    const isActive = i === activeIdx;
+    return `<div class="dash-bar${isActive ? ' active' : ''}" style="height:${heightPct}%;" title="${val}°C">
+      ${isActive ? `<div class="dash-bar-tooltip">${val}°C</div>` : ''}
+    </div>`;
+  }).join('');
+
+  // Show 6 evenly spaced labels
+  if (labelsContainer && labels.length > 0) {
+    const step = Math.max(1, Math.floor(labels.length / 6));
+    const displayLabels = [];
+    for (let i = 0; i < labels.length; i += step) {
+      displayLabels.push(labels[i]);
+    }
+    // Ensure we have the last label
+    if (displayLabels.length < 6 && labels.length > 0) {
+      displayLabels.push(labels[labels.length - 1]);
+    }
+    labelsContainer.innerHTML = displayLabels.map(l => `<span>${l}</span>`).join('');
+  }
+}
+</script>
+{% endblock %}

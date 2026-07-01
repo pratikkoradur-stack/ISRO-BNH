@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Cooling Simulator{% endblock %}
+{% block page_title %}Cooling Scenario Simulator{% endblock %}
+{% block page_subtitle %}Test cooling interventions and visualize real-time temperature impact{% endblock %}
+
+{% block content %}
+
+<div class="content-grid">
+
+  <!-- Controls Panel -->
+  <div class="col-4">
+    <div class="card card-body" style="height:fit-content;">
+      <h3 style="font-size:1rem;margin-bottom:4px;">🎛️ Intervention Controls</h3>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:20px;">Adjust sliders to configure cooling interventions</p>
+
+      <!-- Tree Cover -->
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>🌳 Tree Cover Increase</span>
+          <span class="slider-val" id="valTree">0%</span>
+        </div>
+        <input type="range" id="slTree" min="0" max="50" value="0" step="1">
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">i-Tree / UFORE model · -2.8°C max reduction</div>
+      </div>
+
+      <!-- Cool Roofs -->
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>🏠 Cool Roof Implementation</span>
+          <span class="slider-val" id="valRoof">0%</span>
+        </div>
+        <input type="range" id="slRoof" min="0" max="50" value="0" step="1">
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">Albedo modeling · -2.1°C max reduction</div>
+      </div>
+
+      <!-- Water Bodies -->
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>💧 Water Bodies Restoration</span>
+          <span class="slider-val" id="valWater">0%</span>
+        </div>
+        <input type="range" id="slWater" min="0" max="30" value="0" step="1">
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">JRC / MODIS surface water · -1.6°C max reduction</div>
+      </div>
+
+      <!-- Green Corridors -->
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>🌿 Green Corridors</span>
+          <span class="slider-val" id="valCorridor">0%</span>
+        </div>
+        <input type="range" id="slCorridor" min="0" max="40" value="0" step="1">
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;">GeoNetworkX graph analysis · -1.9°C max reduction</div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn btn-primary" id="btnSimulate" style="flex:1;">
+          <span id="simBtnText">▶ Run Simulation</span>
+          <span id="simSpinner" class="spinner" style="display:none;width:16px;height:16px;"></span>
+        </button>
+        <button class="btn btn-secondary btn-sm" id="btnReset">Reset</button>
+      </div>
+
+      <!-- Preset Scenarios -->
+      <div class="divider"></div>
+      <div style="font-size:0.78rem;font-weight:700;color:var(--text-secondary);margin-bottom:10px;">⚡ Quick Presets</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <button class="btn btn-secondary btn-sm" onclick="applyPreset(30,0,0,0)" style="justify-content:flex-start;">🌳 Tree Heavy</button>
+        <button class="btn btn-secondary btn-sm" onclick="applyPreset(0,40,0,0)" style="justify-content:flex-start;">🏠 Cool Roofs Only</button>
+        <button class="btn btn-secondary btn-sm" onclick="applyPreset(30,50,20,25)" style="justify-content:flex-start;">🏆 Optimal Mix (Hybrid)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Before / After Visualization -->
+  <div class="col-8">
+    <!-- Temp Comparison -->
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;margin-bottom:20px;">
+      <div>
+        <div style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Before (Current)</div>
+        <div class="temp-block before">
+          <div class="temp-label">Avg Land Temp</div>
+          <div id="tempBefore">42.6°C</div>
+          <div style="font-size:0.75rem;opacity:0.8;margin-top:4px;">Bengaluru · May 2026</div>
+        </div>
+      </div>
+
+      <div style="text-align:center;">
+        <div style="font-size:2rem;color:var(--accent-teal);">→</div>
+        <div id="arrowReduction" style="font-size:0.72rem;font-weight:700;color:var(--accent-teal);background:var(--accent-teal-light);padding:3px 10px;border-radius:100px;margin-top:4px;white-space:nowrap;">No change</div>
+      </div>
+
+      <div>
+        <div style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">After (Simulated)</div>
+        <div class="temp-block after">
+          <div class="temp-label">Projected Avg Temp</div>
+          <div id="tempAfter">42.6°C</div>
+          <div style="font-size:0.75rem;opacity:0.8;margin-top:4px;">With interventions applied</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Impact Summary Cards -->
+    <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px;">
+      <div class="stat-card" style="padding:16px;">
+        <div class="stat-label" style="font-size:0.68rem;">Avg Temp Reduction</div>
+        <div class="stat-value teal" id="impAvgReduction" style="font-size:1.6rem;">0.0°C</div>
+      </div>
+      <div class="stat-card heat" style="padding:16px;">
+        <div class="stat-label" style="font-size:0.68rem;">Max Reduction</div>
+        <div class="stat-value heat" id="impMaxReduction" style="font-size:1.6rem;">0.0°C</div>
+      </div>
+      <div class="stat-card gold" style="padding:16px;">
+        <div class="stat-label" style="font-size:0.68rem;">Hotspot Reduction</div>
+        <div class="stat-value gold" id="impHotspotPct" style="font-size:1.6rem;">0%</div>
+      </div>
+      <div class="stat-card green" style="padding:16px;">
+        <div class="stat-label" style="font-size:0.68rem;">Area Improved</div>
+        <div class="stat-value green" id="impArea" style="font-size:1.6rem;">0 km²</div>
+      </div>
+    </div>
+
+    <!-- Impact Chart -->
+    <div class="card card-body">
+      <h3 style="font-size:1rem;margin-bottom:4px;">📊 Impact Projection</h3>
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;">Simulated temperature trend with interventions applied</p>
+      <div class="chart-container" style="height:200px;">
+        <canvas id="simChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Intervention Icons Bar -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px;">
+      <div id="iconTree" style="text-align:center;padding:14px;background:var(--bg-card);border:1px solid var(--border-divider);border-radius:var(--radius-card);transition:all 0.3s;">
+        <div style="font-size:1.8rem;margin-bottom:6px;">🌳</div>
+        <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:2px;">Tree Cover</div>
+        <div style="font-size:0.85rem;font-weight:700;color:var(--accent-green);" id="iconTreeVal">0%</div>
+      </div>
+      <div id="iconRoof" style="text-align:center;padding:14px;background:var(--bg-card);border:1px solid var(--border-divider);border-radius:var(--radius-card);transition:all 0.3s;">
+        <div style="font-size:1.8rem;margin-bottom:6px;">🏠</div>
+        <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:2px;">Cool Roofs</div>
+        <div style="font-size:0.85rem;font-weight:700;color:var(--accent-cyan);" id="iconRoofVal">0%</div>
+      </div>
+      <div id="iconWater" style="text-align:center;padding:14px;background:var(--bg-card);border:1px solid var(--border-divider);border-radius:var(--radius-card);transition:all 0.3s;">
+        <div style="font-size:1.8rem;margin-bottom:6px;">💧</div>
+        <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:2px;">Water Bodies</div>
+        <div style="font-size:0.85rem;font-weight:700;color:var(--accent-purple);" id="iconWaterVal">0%</div>
+      </div>
+      <div id="iconCorridor" style="text-align:center;padding:14px;background:var(--bg-card);border:1px solid var(--border-divider);border-radius:var(--radius-card);transition:all 0.3s;">
+        <div style="font-size:1.8rem;margin-bottom:6px;">🌿</div>
+        <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);margin-bottom:2px;">Green Corridors</div>
+        <div style="font-size:0.85rem;font-weight:700;color:var(--accent-green);" id="iconCorridorVal">0%</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/simulator.js') }}"></script>
+{% endblock %}
