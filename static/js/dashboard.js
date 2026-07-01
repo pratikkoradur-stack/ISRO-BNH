@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function getFallbackData() {
   return {
-    overview: { avg_land_temp: 42.6, max_hotspot: 57.3, risk_zones: 128, population_at_risk: 2400000 },
+    overview: { avg_land_temp: 42.6, max_hotspot: 57.3, risk_zones: 128, population_at_risk: 14634000 },
     hotspot_alerts: [
       { zone: 'Koramangala', severity: 'Very High', temp: 57.3, lat: 12.9352, lng: 77.6245 },
       { zone: 'Yelahanka',   severity: 'High',      temp: 53.1, lat: 13.1007, lng: 77.5963 },
